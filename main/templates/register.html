@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %} Register {% endblock %}
+
+{% block content %}
+  <form method="post"  enctype="multipart/form-data">
+      {% csrf_token %}
+       <p class="form-text mb-2">Название компании</p>
+       <div class="col-my-4 mb-4"> {{ form.company }}</div>
+       <p class="form-text mb-2">Содержимое YAML файла</p>
+       <div class="form-textarea mb-4"> {{ form.yamldata }}</div>
+       <button type="submit" name="create_form" class="btn btn-success mt-2">
+            Отправить
+       </button>
+    </form>
+  
+    {% if form.errors %}
+       {% for field in form %}
+       {% for error in field.errors %}
+         <p class="text-danger mt-2"> {{ error }} </p>
+       {% endfor %}
+       {% endfor %}
+    {% endif %}
+{% endblock %}
