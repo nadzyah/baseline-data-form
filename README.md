@@ -14,7 +14,7 @@ python3 ./manage.py runserver 0.0.0.0:<port>
 Keep in mind that here we're using PostreSQL database instead of SQLite, so you need to install and configure it.
 If you want revert to SQLite, edit `settings.py` file in `sourcedata/`:
 
-```bash
+```python
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -23,7 +23,7 @@ DATABASES = {
 }
 ```
 
-Then run `python ./manage.py migrate`
+Then run `python3 ./manage.py migrate`
 
 Now you can connect to your server via HTTP: `http://<your_IP>:<port>/`
 
