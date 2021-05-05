@@ -40,9 +40,9 @@ Go to the `http://<your_IP>:<port>/register/` and create a new web form for your
 
 Each organization is stored with its UUID that is used in all URLs that are associated with the organization. Thus customer won't be able to access the web-pages of another one without knowing the exactly UUID of another organization.
 
-Use the web page at `http://<your_IP>:<port>/register/<uuid>/` to edit the form.
+Use the web page at `http://<your_IP>:<port>/<uuid>/` to edit the form.
 
-To get the last saved version of the yaml file in plain text use `http://<your_IP>:<port>/register/<uuid>/yamldata`
+To get the last saved version of the yaml file in plain text use `http://<your_IP>:<port>/<uuid>/yamldata`
 
 ## Customisation
 
