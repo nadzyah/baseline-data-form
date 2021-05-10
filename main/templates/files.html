@@ -12,17 +12,8 @@
   <div class="collapse navbar-collapse flex-grow-0" id="navbarNav">
     <div class="navbar-nav">
       <a class="nav-item nav-link" href="{% url 'main:home' userid %}">Home</a>
-      <a class="nav-item nav-link" href="{% url 'main:files' userid %}">Files</a>
+      <a class="nav-item nav-link active" href="{% url 'main:files' userid %}">Files<span class="sr-only">(current)</span></a>
       <a class="nav-item nav-link" href="{% url 'main:help' userid %}">Help</a>
     </div>
-  </div>
-{% endblock %}
-
-{% block content %}
-  <div class="jumbotron">
-    <h1 class="display-6 text-dark">Ваши данные отправлены. Спасибо</h1>
-    <a class="btn" href="{% url 'main:home' userid %}" role="button">
-       Редактировать данные
-    </a>
   </div>
 {% endblock %}

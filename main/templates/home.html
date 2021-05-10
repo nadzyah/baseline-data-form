@@ -1,20 +1,22 @@
 {% extends 'base.html' %}
 {% block title %} {{ orgname }} {% endblock %}
 
-{% block style  %}
-<style>
-    .container {
-      max-width:960px;
-      margin: 0 auto
-    }
-</style>
-{% endblock  %}
-
 {% block orgname %}
   <a class="navbar-brand" href="{% url 'main:home' userid %}">
   {{ orgname }}
   </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse flex-grow-0" id="navbarNav">
+    <div class="navbar-nav">
+      <a class="nav-item nav-link active" href="{% url 'main:home' userid %}">Home<span class="sr-only">(current)</span></a>
+      <a class="nav-item nav-link" href="{% url 'main:files' userid %}">Files</a>
+      <a class="nav-item nav-link" href="{% url 'main:help' userid %}">Help</a>
+    </div>
+  </div>
 {% endblock %}
+
 {% block content %}
   <div class='columns'>
       <div class='column col-md-12 mb-4'>
@@ -44,6 +46,7 @@
       JSONEditor.defaults.options["disable_array_delete_all_rows"] = 1;
       JSONEditor.defaults.options["disable_array_delete_last_row"] = 1;
       JSONEditor.defaults.options["form_name_root"] = "Форма сбора исходных данных";
+
       // This is the starting value for the editor
       // We will use this to seed the initial editor 
       // and to provide a "Restore to Default" button.
@@ -57,7 +60,7 @@
         
         // The schema for the editor
         schema: {
-          ref: "{{ json_from_yaml }}",
+          ref: '{"type":"object","title":"static","required":["item 1"],"properties":{"item 1":{"type":"object","properties":{"dst":{"type":"string","description":"Destination network"},"gw":{"type":"string","description":"Next hop"}}}}}', 
           format: "grid"
         },
         

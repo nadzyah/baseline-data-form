@@ -30,6 +30,17 @@ def home(request, userid):
 def default(request):
     return render(request, 'default.html')
 
+def help(request, userid):
+    org_object = get_object_or_404(OrganizationModel, pk=userid)
+    return render(request, 'help.html', {'orgname': org_object.company,
+                                         'userid': userid,
+                                        })
+def files(request, userid):
+    org_object = get_object_or_404(OrganizationModel, pk=userid)
+    return render(request, 'files.html', {'orgname': org_object.company,
+                                         'userid': userid,
+                                        })
+
 def success(request, userid):
     org_object = get_object_or_404(OrganizationModel, pk=userid)
     if request.method == "POST":

@@ -10,8 +10,11 @@
     <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-icons.min.css">
 
     <script src="https://cdn.jsdelivr.net/npm/@json-editor/json-editor@latest/dist/jsoneditor.min.js"></script>
-{% block style  %}
   <style type="text/css">
+    .container {
+      max-width:960px;
+      margin: 0 auto
+    }
     @media (min-width: 768px) {
         .container-small {
             width: 300px;
@@ -40,15 +43,16 @@
     .container-small, .container-large {
         max-width: 100%;
     }
+  {% block style  %}
+  {% endblock  %}
   </style>
-{% endblock  %}
 </head>
 
 <body>
-  <nav class="navbar navbar-dark bg-dark mb-4">
+  <nav class="navbar navbar-dark bg-dark mb-4 navbar-expand-lg navbar-custom">
     <div class="container">
 	{% block orgname %}    
-	    <a class="navbar-brand" href="{% url 'main:default' %}">
+      <a class="navbar-brand" href="{% url 'main:default' %}">
 	 Solidex
       </a>
       {% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %} {{ orgname }} {% endblock %}
+
+{% block orgname %}
+  <a class="navbar-brand" href="{% url 'main:home' userid %}">
+  {{ orgname }}
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse flex-grow-0" id="navbarNav">
+    <div class="navbar-nav">
+      <a class="nav-item nav-link" href="{% url 'main:home' userid %}">Home</a>
+      <a class="nav-item nav-link" href="{% url 'main:files' userid %}">Files</a>
+      <a class="nav-item nav-link active" href="{% url 'main:help' userid %}">Help<span class="sr-only">(current)</span></a>
+    </div>
+  </div>
+{% endblock %}
+
+{% block content %}
+  <h1>Инструкция по использованию</h1>
+  <hr class="my-4">
+  <h4 >Заполнение формы</h4>
+  <ul>
+    <li>"Home" в навигационной панели ведёт на страницу с основной формой сбора исходных данных — её и нужно заполнить</li>
+    <li>По завершению заполнения формы сохраните её с использованием кнопки "Отправить".
+      <br> P. S. Форма подлежит редактированию</li>
+    <li>Кнопка "Сбросить изменения" возвращает значения полей формы к варианту последней сохранённой версии</li>
+  </ul>
+{% endblock %}
+
