@@ -13,7 +13,77 @@
     <div class="navbar-nav">
       <a class="nav-item nav-link" href="{% url 'main:home' userid %}">Home</a>
       <a class="nav-item nav-link active" href="{% url 'main:files' userid %}">Files<span class="sr-only">(current)</span></a>
+      <a class="nav-item nav-link" href="{% url 'main:commands' userid %}">Commands</a>
       <a class="nav-item nav-link" href="{% url 'main:help' userid %}">Help</a>
     </div>
   </div>
+{% endblock %}
+
+{% block content %}
+  <h4 class="mb-4">{{ comment }}</h4>
+  {% if docs %}
+    <table class="table table-hover">
+      <thead class="thead-light">
+        <tr>
+	  <th>Name</th>
+	  <th>Description</th>
+	  <th>Download</th>
+	  <th>Delete</th>
+	</tr>
+      </thead>
+      <tbody>
+	{% for doc in docs %}
+	  <tr>
+	    <td>
+	      {{ doc.document.name | slice:"37:" }}
+	    </td>
+	    <td>
+	      {{ doc.description  }}
+	    </td>
+	    <td>
+	      <a href="{{ doc.document.url }}" class="btn btn-secondary" role="button">
+	  	Download
+	      </a>
+	    </td>
+	    <td>
+	    	<form method="POST" action="{% url 'main:delete_file' userid doc.id %}">
+	    	  {% csrf_token %}
+	    	  <button type="submit" class="btn btn-danger">Delete</button>
+	    	</form>
+	    </td>
+	  </tr>
+       {% endfor %}
+     </tbody>
+   </table>
+   {% endif %}
+
+   {% if current_uploaded_files < max_files %}
+     <form method="post" enctype="multipart/form-data">
+       {% csrf_token %}
+       <div class="form-group row ml-0">
+	 <div class="col-4 mr-2">
+           <div class="form-text">Описание</div>
+           <div class="input-sm"> {{ form.description }}</div>
+         </div>
+	 <div class="col-xs-2">
+           <div class="form-text">Файл</div>
+	   <div type="file" class="mt-1"> {{ form.document }}</div>
+	   <!--div class="custom-file">
+	     <div type="file" class="custom-file-input mt-1"> {{ form.document }}</div>
+             <label class="custom-file-label" for="customFile">Choose file</label>
+           </div-->
+	 </div>
+       </div>
+       <button type="submit" name="upload_doc" class="btn btn-success mt-0 ml-3">Загрузить</button>
+     </form>
+    {% elif max_files == 0 %}
+      <div class="jumbotron">
+        <h2 class="display-6 text-dark">Загрузка конфигурационных файлов не требуется</h2>
+        <a class="btn btn-secondary mt-4" href="{% url 'main:home' userid %}" role="button">
+         Вернуться к основной форме
+        </a>
+      </div>
+    {% else %}
+    	<p>Количество загруженных файлов достигнуто требуемого значения. Для загрузки новой версии существующего файла удалите исходный файл, затем загрузите его изменённую версию.
+    {% endif %}
 {% endblock %}

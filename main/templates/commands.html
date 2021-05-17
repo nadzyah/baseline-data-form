@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %} {{ orgname }} {% endblock %}
+
+{% block style %}
+  .card.card-body.mb-3.bg-light {
+    border: 0px dotted rgba(0,0,0,.125);
+    background-color: white !important;
+    border-radius: 0;
+   }
+
+{% endblock %}
+
+{% block orgname %}
+  <a class="navbar-brand" href="{% url 'main:home' userid %}">
+  {{ orgname }}
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-contr
+ols="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse flex-grow-0" id="navbarNav">
+    <div class="navbar-nav">
+      <a class="nav-item nav-link" href="{% url 'main:home' userid %}">Home</a>
+      <a class="nav-item nav-link" href="{% url 'main:files' userid %}">Files</a>
+      <a class="nav-item nav-link active" href="{% url 'main:commands' userid %}">Commands<span class="sr-only">(current)</span></a>
+      <a class="nav-item nav-link" href="{% url 'main:help' userid %}">Help</a>
+    </div>
+  </div>
+{% endblock %}
+
+{% block content %}
+  <div class='columns'>
+     <div class='column col-md-12' id='editor_holder'></div>
+  </div>
+  <div class='columns'>
+    <div class='column col-md-12 mb-4'>
+      <button id='submit' class='btn btn-success ml-4 mb-4'>Отправить</button>
+    </div>
+  </div>
+  
+  <script type="text/javascript">
+    JSONEditor.defaults.theme = 'bootstrap4';
+    JSONEditor.defaults.iconlib = 'fontawesome5';
+    JSONEditor.defaults.options["disable_edit_json"] = 1;
+    JSONEditor.defaults.options["disable_collapse"] = 1;
+    JSONEditor.defaults.options["disable_properties"] = 1;
+
+    org_schema = JSON.stringify({{ commands_schema|safe }}).replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t")
+    var editor = new JSONEditor(document.getElementById('editor_holder'),{
+        // Enable fetching schemas via ajax
+        ajax: true,
+        
+        // The schema for the editor
+	schema: JSON.parse(org_schema),
+        
+        // Seed the form with a starting value
+      });
+    
+    document.getElementById('submit').addEventListener('click',function() {
+      $.ajax({
+          url: "{% url 'main:commands' userid %}",
+          type: "POST",
+          dataType: "json",
+          xhrFields: { responseType: "document" },
+          data: {
+            url: "{% url 'main:commands' userid %}",
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            "filled_output": JSON.stringify(editor.getValue())
+          },
+          success : function(json) {
+            window.location = "{% url 'main:commands' userid %}"
+          },
+          error : function(xhr,errmsg,err) {
+            window.location = "{% url 'main:commands' userid %}"
+          }
+      })
+    });
+
+    $(document).ready(function (){
+	$("label").filter(function() {
+            return $(this).text() == "Logs";
+	}).replaceWith('<p class="mt-2" style="font-size: large; margin-bottom: 0px;">Введите указанные комманды в CLI соответствующих устройств. Скопируйте вывод комманд в соответствующие текстовые поля</p>');
+
+	$("textarea").attr("rows", "10");
+    });
+  </script>
+{% endblock %}

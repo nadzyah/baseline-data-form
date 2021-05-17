@@ -1,6 +1,43 @@
 {% extends 'base.html' %}
 {% block title %} {{ orgname }} {% endblock %}
 
+{% block style %}
+   .je-switcher{
+     display: none;
+     visibility: hidden;
+     position: absolute;
+     top: 0;
+     bottom: 0;
+   }
+  
+   label {
+     font-weight: bold;
+   }
+  
+   .required::after {
+      /* content: " *";
+      color: red;
+      font: inherit; */
+   }
+
+   h3.card-title {
+     display: none !important;
+     margin: 0px 0px 0px 0px !important;
+   }
+
+   span.btn-group.je-object__controls {
+     display: none !important;
+   }
+
+   .card.card-body.mb-3.bg-light {
+    border: 1px dotted rgba(0,0,0,.125);
+    background-color: #fcfcfc !important;
+    border-radius: 0;
+    /*margin-bottom: 1px !important;*/
+   }
+
+{% endblock %}
+
 {% block orgname %}
   <a class="navbar-brand" href="{% url 'main:home' userid %}">
   {{ orgname }}
@@ -12,6 +49,7 @@
     <div class="navbar-nav">
       <a class="nav-item nav-link active" href="{% url 'main:home' userid %}">Home<span class="sr-only">(current)</span></a>
       <a class="nav-item nav-link" href="{% url 'main:files' userid %}">Files</a>
+      <a class="nav-item nav-link" href="{% url 'main:commands' userid %}">Commands</a>
       <a class="nav-item nav-link" href="{% url 'main:help' userid %}">Help</a>
     </div>
   </div>
@@ -21,8 +59,8 @@
   <div class='columns'>
       <div class='column col-md-12 mb-4'>
         <button id='submit' class='btn btn-success mr-2'>Отправить</button>
-        <button id='restore' class='btn'>Сбросить изменения</button>
-	<span id='valid_indicator' class='label label-success'></span>  
+        <button id='restore' class='btn btn-warning'>Сбросить изменения</button>
+        <!--span id='valid_indicator' class='label label-success'></span-->  
       </div>
   </div>
   <div class='columns'>
@@ -30,28 +68,29 @@
   </div>
 
   <script type="text/javascript">
-      JSONEditor.defaults.theme = 'spectre';
-      JSONEditor.defaults.iconlib = 'spectre';
+      JSONEditor.defaults.theme = 'bootstrap4';
+      JSONEditor.defaults.iconlib = 'fontawesome5';
       JSONEditor.defaults.options["show_errors"] = "always";
+      JSONEditor.defaults.options["compact"] = 0;
       JSONEditor.defaults.options["required_by_default"] = 1;
       JSONEditor.defaults.options["no_additional_properties"] = 0;
       JSONEditor.defaults.options["disable_edit_json"] = 1;
-      JSONEditor.defaults.options["disable_collapse"] = 0;
-      JSONEditor.defaults.options["disable_properties"] = 0;
-      JSONEditor.defaults.options["disable_array_add"] = 0;
+      JSONEditor.defaults.options["disable_collapse"] = 1;
+      JSONEditor.defaults.options["disable_properties"] = 1;
+      JSONEditor.defaults.options["disable_array_add"] = 1;
       JSONEditor.defaults.options["disable_array_reorder"] = 1;
       JSONEditor.defaults.options["disable_array_delete"] = 0;
       JSONEditor.defaults.options["enable_array_copy"] = 1;
-      JSONEditor.defaults.options["array_controls_top"] = 1;
+      JSONEditor.defaults.options["array_controls_top"] = 0;
       JSONEditor.defaults.options["disable_array_delete_all_rows"] = 1;
       JSONEditor.defaults.options["disable_array_delete_last_row"] = 1;
+      JSONEditor.defaults.options["object_layout"] = "table";
       JSONEditor.defaults.options["form_name_root"] = "Форма сбора исходных данных";
 
       // This is the starting value for the editor
       // We will use this to seed the initial editor 
       // and to provide a "Restore to Default" button.
-      var with_quot = '{{ json_from_yaml }}';
-      var starting_value = JSON.parse(with_quot.replace(/&quot;/g, '\"'));
+      var starting_value = JSON.parse(JSON.stringify({{ json_from_yaml|safe }}));
       
       // Initialize the editor
       var editor = new JSONEditor(document.getElementById('editor_holder'),{
@@ -60,35 +99,33 @@
         
         // The schema for the editor
         schema: {
-          ref: '{"type":"object","title":"static","required":["item 1"],"properties":{"item 1":{"type":"object","properties":{"dst":{"type":"string","description":"Destination network"},"gw":{"type":"string","description":"Next hop"}}}}}', 
-          format: "grid"
+          schema: {},
+          format: "grid",
         },
         
         // Seed the form with a starting value
         startval: starting_value
       });
 
-     
       document.getElementById('submit').addEventListener('click',function() {
-            $.ajax({
-                url: "{% url 'main:success' userid %}",
-                type: "POST",
-                dataType: "json",
-		xhrFields: { responseType: "document" },
-                data: {
-                    url: "{% url 'main:success' userid %}",
-                    csrfmiddlewaretoken: '{{ csrf_token }}',
-		    "after_edit": JSON.stringify(editor.getValue())
-                    },
-                success : function(json) {
-                    location.reload(true)
-                },
-		error : function(xhr,errmsg,err) {
-		    window.location = "{% url 'main:success' userid %}"
-                    //location.reload(true)
-		}
-                })
-            });
+          $.ajax({
+              url: "{% url 'main:success' userid %}",
+              type: "POST",
+              dataType: "json",
+              xhrFields: { responseType: "document" },
+              data: {
+                  url: "{% url 'main:success' userid %}",
+                  csrfmiddlewaretoken: '{{ csrf_token }}',
+                 "after_edit": JSON.stringify(editor.getValue())
+              },
+              success : function(json) {
+                window.location = "{% url 'main:success' userid %}"
+              },
+              error : function(xhr,errmsg,err) {
+                window.location = "{% url 'main:success' userid %}"
+              }
+          })
+      });
 
       // Hook up the Restore to Default button
       document.getElementById('restore').addEventListener('click',function() {
@@ -97,21 +134,95 @@
       
       // Hook up the validation indicator to update its 
       // status whenever the editor changes
-      editor.on('change',function() {
+      editor.on('change', function() {
         // Get an array of errors from the validator
         var errors = editor.validate();
         
         var indicator = document.getElementById('valid_indicator');
         
         // Not valid
+        /*
         if(errors.length) {
           indicator.className = 'label alert';
           indicator.textContent = 'not valid';
         }
         // Valid
-        else {          indicator.className = 'label success';
+        else {
+          indicator.className = 'label success';
           indicator.textContent = 'valid';
         }
+        */
       });
+     
+      // Replacement
+
+
+      $(document).ready(function () {
+        //$("label:contains(interface)").replaceWith('<label>Интерфейс</label>');
+        
+        //var regex = new RegExp("*/^.*[0-9]$/");
+
+        //for (i = 0; i < 100; i++) {   
+        // $("div[class='card card-body mb-3 bg-light'][data-schemapath$='." + i +"']:contains('item')").css({"background-color": "white !important", "border": "0px"});
+        //};
+
+        $("label:contains(router)").text(function(index, text) {
+            return text.replace('router', 'Router');
+        });
+
+        //$("label:contains(item)").text(function(index, text) {
+        //    return text.replace('item', '№');
+        //});
+        
+        //$("label:contains(item)").css("display", "none")
+
+        $("label").filter(function() {
+            return $(this).text() == "ip";
+          }).html('IP адрес');
+
+        $("label").filter(function() {
+            return $(this).text() == "gateway" || $(this).text() == "gw";
+          }).html('Шлюз');
+
+        $("label").filter(function() {
+            return $(this).text() == "default gateway" || $(this).text() == "default gw";
+          }).html('Шлюз по умолчанию');
+
+        $("label").filter(function() {
+            return $(this).text() == "ip_mask";
+          }).html('IP адрес/Маска');
+        
+        $("label").filter(function() {
+            return $(this).text() == "interfaces";
+          }).html('Интерфейсы');
+        
+        $("label").filter(function() {
+            return $(this).text() == "mgmt_iface";
+          }).html('MGMT интерфейс');
+
+        $("label").filter(function() {
+            return $(this).text() == "network";
+          }).html('Подсеть');
+        
+        // Syslog <-> IP адрес Syslog-сервера
+        $("label").filter(function() {
+            return $(this).text() == "syslog";
+          }).replaceWith('<label>IP адрес Syslog-сервера</label>');
+
+        // NTP <-> IP адрес NTP-сервера
+        $("label").filter(function() {
+            return $(this).text() == "ntp";
+          }).replaceWith('<label>IP адрес NTP-сервера</label>');
+
+        // DNS
+        $("label").filter(function() {
+            return $(this).text() == "dns1";
+          }).replaceWith('<label>IP адрес основного DNS-сервера</label>');
+
+        $("label").filter(function() {
+            return $(this).text() == "dns2";
+          }).replaceWith('<label>IP адрес резервного DNS-сервера</label>');
+      });
+
     </script>
 {% endblock %}
