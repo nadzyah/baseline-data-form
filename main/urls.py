@@ -24,8 +24,6 @@ urlpatterns = [
     #URLs for commands
     path("<uuid:userid>/commands/", views.commands, name="commands"),
 
-    path("<uuid:userid>/help/", views.help, name="help"),
-
     path("<uuid:userid>/yamldata.yml", views.yaml_response, name="yaml_response"),
     path("<uuid:userid>/yamldata.yml/", views.yaml_response, name="yaml_response"),
 

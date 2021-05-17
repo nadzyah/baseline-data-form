@@ -1,8 +1,31 @@
 {% extends 'base.html' %}
-{% block title %} {{ orgname }} {% endblock %}
 
-{% block style %}
-   .je-switcher{
+{% block title %} {{ org_object.company }} {% endblock %}
+
+{% block orgname %}
+  <a class="navbar-brand" href="{% url 'main:home' userid %}">
+  {{ org_object.company }}
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse flex-grow-0" id="navbarNav">
+    <div class="navbar-nav">
+      <a class="nav-item nav-link active" href="{% url 'main:home' userid %}">Home<span class="sr-only">(
+current)</span></a>
+      {% if org_object.num_conf != 0 %}
+        <a class="nav-item nav-link" href="{% url 'main:files' userid %}">Files</a>
+      {% endif %}
+      {% if org_object.commands != '' %}
+        <a class="nav-item nav-link" href="{% url 'main:commands' userid %}">Commands</a>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
+
+{% block content %}
+  <style>
+  .je-switcher{
      display: none;
      visibility: hidden;
      position: absolute;
@@ -36,35 +59,21 @@
     /*margin-bottom: 1px !important;*/
    }
 
-{% endblock %}
-
-{% block orgname %}
-  <a class="navbar-brand" href="{% url 'main:home' userid %}">
-  {{ orgname }}
-  </a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse flex-grow-0" id="navbarNav">
-    <div class="navbar-nav">
-      <a class="nav-item nav-link active" href="{% url 'main:home' userid %}">Home<span class="sr-only">(current)</span></a>
-      <a class="nav-item nav-link" href="{% url 'main:files' userid %}">Files</a>
-      <a class="nav-item nav-link" href="{% url 'main:commands' userid %}">Commands</a>
-      <a class="nav-item nav-link" href="{% url 'main:help' userid %}">Help</a>
+ 
+  </style>
+  <div class='columns'>
+    <div class='column col-md-12 mb-4'>
+      <h4>Заполните поля формы в соответствии с их названиями</h4>
     </div>
-  </div>
-{% endblock %}
-
-{% block content %}
-  <div class='columns'>
-      <div class='column col-md-12 mb-4'>
-        <button id='submit' class='btn btn-success mr-2'>Отправить</button>
-        <button id='restore' class='btn btn-warning'>Сбросить изменения</button>
-        <!--span id='valid_indicator' class='label label-success'></span-->  
-      </div>
-  </div>
-  <div class='columns'>
-     <div class='column col-md-12' id='editor_holder'></div>
+    <div class='column col-md-12 mb-4' id='editor_holder'></div>
+    <div class='column col-md-12 mb-4'>
+      <p>По завершению заполнения формы сохраните её с использованием кнопки "Отправить" (форма подлежит повторному редактированию). Кнопка "Сбросить изменения" возвращает значения полей формы к варианту последней сохранённой версии (при первом редактировании — к первоначальной).</p>
+    </div>
+    <div class='column col-md-12 mb-4'>
+      <button id='submit' class='btn btn-success mr-2'>Отправить</button>
+      <button id='restore' class='btn btn-warning'>Сбросить изменения</button>
+      <!--span id='valid_indicator' class='label label-success'></span-->  
+    </div>
   </div>
 
   <script type="text/javascript">
@@ -91,7 +100,7 @@
       // We will use this to seed the initial editor 
       // and to provide a "Restore to Default" button.
       var starting_value = JSON.parse(JSON.stringify({{ json_from_yaml|safe }}));
-      
+     
       // Initialize the editor
       var editor = new JSONEditor(document.getElementById('editor_holder'),{
         // Enable fetching schemas via ajax
@@ -100,7 +109,7 @@
         // The schema for the editor
         schema: {
           schema: {},
-          format: "grid",
+          format: "table",
         },
         
         // Seed the form with a starting value
@@ -116,7 +125,8 @@
               data: {
                   url: "{% url 'main:success' userid %}",
                   csrfmiddlewaretoken: '{{ csrf_token }}',
-                 "after_edit": JSON.stringify(editor.getValue())
+                 "after_edit": JSON.stringify(editor.getValue()),
+		 "substitutions": JSON.stringify({{ substitutions|safe }})
               },
               success : function(json) {
                 window.location = "{% url 'main:success' userid %}"
@@ -153,76 +163,58 @@
         }
         */
       });
-     
+    
+
       // Replacement
-
-
       $(document).ready(function () {
-        //$("label:contains(interface)").replaceWith('<label>Интерфейс</label>');
         
-        //var regex = new RegExp("*/^.*[0-9]$/");
+	substitutions = {{ substitutions|safe }}
+	
+        for (key in substitutions){
+	    $("label").filter(function() {
+              return $(this).text() == key;
+            }).html(substitutions[key]);
+	}
 
-        //for (i = 0; i < 100; i++) {   
-        // $("div[class='card card-body mb-3 bg-light'][data-schemapath$='." + i +"']:contains('item')").css({"background-color": "white !important", "border": "0px"});
-        //};
+	static_substitutions = {
+	  "ip": "IP адрес",
+	  "gateway": "Шлюз",
+	  "gw": "Шлюз",
+	  "default gateway": "Шлюз по умолчанию",
+	  "default gw": "Шлюз по умолчанию",
+	  "ip_mask": "IP адрес/маска",
+	  "network": "Подсеть",
+	  "interfaces": "Интерфейсы",
+	  "syslog": "Syslog сервер",
+	  "ntp": "NTP сервер",
+	  "dns1": "Основной DNS сервер",
+	  "dns2": "Резервный DNS сервер"
+	};
+   
+        for (key in static_substitutions){
+            $("label").filter(function() {
+              return $(this).text() == key;
+            }).html(static_substitutions[key]);
+        };     
+
+	/*
+        for (i = 0; i < 100; i++) {   
+         $("div[class='card card-body mb-3 bg-light'][data-schemapath$='." + i +"']:contains('item')").css({"background-color": "white !important", "border": "0px"});
+        };
 
         $("label:contains(router)").text(function(index, text) {
             return text.replace('router', 'Router');
         });
 
-        //$("label:contains(item)").text(function(index, text) {
-        //    return text.replace('item', '№');
-        //});
+        $("label:contains(item)").text(function(index, text) {
+            return text.replace('item', '№');
+        });
         
-        //$("label:contains(item)").css("display", "none")
+        $("label:contains(item)").css("display", "none")
+        */
 
-        $("label").filter(function() {
-            return $(this).text() == "ip";
-          }).html('IP адрес');
-
-        $("label").filter(function() {
-            return $(this).text() == "gateway" || $(this).text() == "gw";
-          }).html('Шлюз');
-
-        $("label").filter(function() {
-            return $(this).text() == "default gateway" || $(this).text() == "default gw";
-          }).html('Шлюз по умолчанию');
-
-        $("label").filter(function() {
-            return $(this).text() == "ip_mask";
-          }).html('IP адрес/Маска');
-        
-        $("label").filter(function() {
-            return $(this).text() == "interfaces";
-          }).html('Интерфейсы');
-        
-        $("label").filter(function() {
-            return $(this).text() == "mgmt_iface";
-          }).html('MGMT интерфейс');
-
-        $("label").filter(function() {
-            return $(this).text() == "network";
-          }).html('Подсеть');
-        
-        // Syslog <-> IP адрес Syslog-сервера
-        $("label").filter(function() {
-            return $(this).text() == "syslog";
-          }).replaceWith('<label>IP адрес Syslog-сервера</label>');
-
-        // NTP <-> IP адрес NTP-сервера
-        $("label").filter(function() {
-            return $(this).text() == "ntp";
-          }).replaceWith('<label>IP адрес NTP-сервера</label>');
-
-        // DNS
-        $("label").filter(function() {
-            return $(this).text() == "dns1";
-          }).replaceWith('<label>IP адрес основного DNS-сервера</label>');
-
-        $("label").filter(function() {
-            return $(this).text() == "dns2";
-          }).replaceWith('<label>IP адрес резервного DNS-сервера</label>');
-      });
+        });
+	
 
     </script>
 {% endblock %}

@@ -12,9 +12,15 @@
   <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT" crossorigin="anonymous"></script>
   <style type="text/css">
     .container {
-      max-width:960px;
-      margin: 0 auto
+      max-width: 960px;
+      margin: 0 auto;
     }
+
+    .full-height {
+      min-height: 820px;
+      height: 100%;
+    }
+
     @media (min-width: 768px) {
         .container-small {
             width: 300px;
@@ -43,6 +49,7 @@
     .container-small, .container-large {
         max-width: 100%;
     }
+
   {% block style  %}
   {% endblock  %}
   </style>
@@ -59,9 +66,20 @@
     </div>
   </nav>
   </div>
+  <div class="full-height">
   <div class="container">
     {% block content %}
     {% endblock %}
+  </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="text-center text-lg-start text-muted">
+    <div class="text-center p-4" style="border-top: 1px solid rgba(0, 0, 0, 0.1);">
+      © <a class="text-reset fw-bold" href="http://www.solidex.by/">Солидекс.</a> Все права защищены
+    </div>
+  </footer>
+  <!-- Footer -->
 
   <!--script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script-->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>

@@ -12,16 +12,16 @@ class OrganizationModel(models.Model):
     yamldata = models.TextField(help_text='Data from .yml file')
 
     # Number of config files
-    num_conf = models.IntegerField(help_text='Number of required config files',
-                       validators=[MinValueValidator(0, message="Minimum number\
-                                                        of required config files is 0"), 
-                                   MaxValueValidator(10, message="Maximum number\
-                                                        of required config files is 10")], 
+    num_conf = models.IntegerField(help_text='Number of requested config files',
+                       validators=[MinValueValidator(0, message="Minimal number\
+                                                        of requested config files is 0"), 
+                                   MaxValueValidator(10, message="Maximal number\
+                                                        of requested config files is 10")], 
                        default=0)
     
     # Comment that the customer will use to understand what to upload
     comment_conf = models.CharField(help_text='Comment for configs', max_length=500, blank=True)
-    commands = models.TextField(help_text='Commands for commands', blank=True)
+    commands = models.TextField(blank=True)
 
     def __str__(self):
         return self.company

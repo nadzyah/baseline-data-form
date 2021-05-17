@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 
-{% block title %} {{ orgname }} {% endblock %}
+{% block title %} {{ org_object.company }} {% endblock %}
 
 {% block orgname %}
   <a class="navbar-brand" href="{% url 'main:home' userid %}">
-  {{ orgname }}
+  {{ org_object.company }}
   </a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
@@ -13,11 +13,13 @@
     <div class="navbar-nav">
       <a class="nav-item nav-link" href="{% url 'main:home' userid %}">Home</a>
       <a class="nav-item nav-link active" href="{% url 'main:files' userid %}">Files<span class="sr-only">(current)</span></a>
-      <a class="nav-item nav-link" href="{% url 'main:commands' userid %}">Commands</a>
-      <a class="nav-item nav-link" href="{% url 'main:help' userid %}">Help</a>
+      {% if org_object.commands != '' %}
+        <a class="nav-item nav-link" href="{% url 'main:commands' userid %}">Commands</a>
+      {% endif %}
     </div>
-  </div>
+  </div>  
 {% endblock %}
+
 
 {% block content %}
   <h4 class="mb-4">{{ comment }}</h4>
@@ -69,20 +71,13 @@
            <div class="form-text">Файл</div>
 	   <div type="file" class="mt-1"> {{ form.document }}</div>
 	   <!--div class="custom-file">
-	     <div type="file" class="custom-file-input mt-1"> {{ form.document }}</div>
+	     <div type="file" class="custom-file-input mt-1" id="customFile"> {{ form.document }}</div>
              <label class="custom-file-label" for="customFile">Choose file</label>
            </div-->
 	 </div>
        </div>
-       <button type="submit" name="upload_doc" class="btn btn-success mt-0 ml-3">Загрузить</button>
+       <button type="submit" name="upload_doc" class="btn btn-success mt-0 ml-3 mb-4">Загрузить</button>
      </form>
-    {% elif max_files == 0 %}
-      <div class="jumbotron">
-        <h2 class="display-6 text-dark">Загрузка конфигурационных файлов не требуется</h2>
-        <a class="btn btn-secondary mt-4" href="{% url 'main:home' userid %}" role="button">
-         Вернуться к основной форме
-        </a>
-      </div>
     {% else %}
     	<p>Количество загруженных файлов достигнуто требуемого значения. Для загрузки новой версии существующего файла удалите исходный файл, затем загрузите его изменённую версию.
     {% endif %}

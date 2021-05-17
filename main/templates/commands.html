@@ -1,40 +1,39 @@
 {% extends 'base.html' %}
 
-{% block title %} {{ orgname }} {% endblock %}
-
-{% block style %}
-  .card.card-body.mb-3.bg-light {
-    border: 0px dotted rgba(0,0,0,.125);
-    background-color: white !important;
-    border-radius: 0;
-   }
-
-{% endblock %}
+{% block title %} {{ org_object.company }} {% endblock %}
 
 {% block orgname %}
   <a class="navbar-brand" href="{% url 'main:home' userid %}">
-  {{ orgname }}
+  {{ org_object.company }}
   </a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-contr
-ols="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse flex-grow-0" id="navbarNav">
     <div class="navbar-nav">
       <a class="nav-item nav-link" href="{% url 'main:home' userid %}">Home</a>
-      <a class="nav-item nav-link" href="{% url 'main:files' userid %}">Files</a>
-      <a class="nav-item nav-link active" href="{% url 'main:commands' userid %}">Commands<span class="sr-only">(current)</span></a>
-      <a class="nav-item nav-link" href="{% url 'main:help' userid %}">Help</a>
+      {% if org_object.num_conf != 0 %}
+        <a class="nav-item nav-link" href="{% url 'main:files' userid %}">Files</a>
+      {% endif %}
+     <a class="nav-item nav-link active" href="{% url 'main:commands' userid %}">Commands<span class="sr-only">(current)</span></a>
     </div>
-  </div>
+  </div>  
 {% endblock %}
 
 {% block content %}
+  <style>
+    .card.card-body.mb-3.bg-light {
+      border: 0px dotted rgba(0,0,0,.125);
+      background-color: white !important;
+      border-radius: 0;
+     }
+  </style>
+
   <div class='columns'>
      <div class='column col-md-12' id='editor_holder'></div>
   </div>
   <div class='columns'>
-    <div class='column col-md-12 mb-4'>
+    <div class='column col-md-12 mt-0'>
       <button id='submit' class='btn btn-success ml-4 mb-4'>Отправить</button>
     </div>
   </div>

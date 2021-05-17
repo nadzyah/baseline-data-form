@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 
-{% block title %} {{ orgname }} {% endblock %}
+{% block title %} {{ org_object.company }} {% endblock %}
 
 {% block orgname %}
   <a class="navbar-brand" href="{% url 'main:home' userid %}">
-  {{ orgname }}
+  {{ org_object.company }}
   </a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
@@ -12,8 +12,12 @@
   <div class="collapse navbar-collapse flex-grow-0" id="navbarNav">
     <div class="navbar-nav">
       <a class="nav-item nav-link" href="{% url 'main:home' userid %}">Home</a>
-      <a class="nav-item nav-link" href="{% url 'main:files' userid %}">Files</a>
-      <a class="nav-item nav-link" href="{% url 'main:commands' userid %}">Commands</a>
+      {% if org_object.num_conf != 0 %}
+        <a class="nav-item nav-link" href="{% url 'main:files' userid %}">Files</a>
+      {% endif %}
+      {% if org_object.commands != '' %}
+        <a class="nav-item nav-link" href="{% url 'main:commands' userid %}">Commands</a>
+      {% endif %}
       <a class="nav-item nav-link active" href="{% url 'main:help' userid %}">Help<span class="sr-only">(current)</span></a>
     </div>
   </div>

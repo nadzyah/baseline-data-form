@@ -4,10 +4,10 @@ from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.views.generic.edit import FormView
 from django.conf import settings
-import yaml
-import json
+import yaml, json
 import os
-from .logs_to_schema import *
+from .modules.logs_to_schema import *
+from .modules.substitutions import *
 
 # http://<server's_IP>/register
 def register(request):
@@ -18,7 +18,8 @@ def register(request):
         form = OrganizationForm(request.POST)
         if form.is_valid():
             post = form.save()
-            post.commands = convert_dict_array(post.commands)
+            if post.commands != '':
+                post.commands = convert_dict_array(yaml.safe_load(post.commands))
             post.save()
             return HttpResponseRedirect(f"/{post.id}")
     return render(request, 'register.html', {'form': form})
@@ -29,9 +30,11 @@ def home(request, userid):
     replaced_yaml = org_object.yamldata
     yform = yaml.safe_load(replaced_yaml)
     json_from_yaml = json.dumps(yform, sort_keys=False)
-    return render(request, 'home.html', {'orgname': org_object.company,
+    substitutions = yaml_comments(org_object.yamldata)
+    return render(request, 'home.html', {'org_object': org_object,
                                          'userid': userid,
                                          'json_from_yaml': json_from_yaml,
+                                         'substitutions': substitutions,
                                          })
 
 # /<uuid:userid>/success/
@@ -39,9 +42,11 @@ def success(request, userid):
     org_object = get_object_or_404(OrganizationModel, pk=userid)
     if request.method == "POST":
         after_edit = request.POST.get("after_edit")
-        org_object.yamldata = yaml.dump(yaml.safe_load(json.dumps(json.loads(after_edit), ensure_ascii=False)), sort_keys=False)
+        substitutions = request.POST.get("substitutions")
+        without_comments = yaml.dump(yaml.safe_load(json.dumps(json.loads(after_edit), ensure_ascii=False)), sort_keys=False)
+        org_object.yamldata = set_comments_back(without_comments, json.loads(substitutions))
         org_object.save()
-    return render(request, 'success.html', {'orgname': org_object.company,
+    return render(request, 'success.html', {'org_object': org_object,
                                             'userid': userid, 
                                            })
 
@@ -49,15 +54,12 @@ def success(request, userid):
 def default(request):
     return render(request, 'default.html')
 
-def help(request, userid):
-    org_object = get_object_or_404(OrganizationModel, pk=userid)
-    return render(request, 'help.html', {'orgname': org_object.company,
-                                         'userid': userid,
-                                        })
 
 # /<uuid:userid>/files/
 def files(request, userid):
     org_object = get_object_or_404(OrganizationModel, pk=userid)
+    if org_object.num_conf == 0:
+        raise Http404()
     docs = []
     for doc in DocumentModel.objects.filter(organization__id=userid):
         docs.append(doc)
@@ -69,7 +71,7 @@ def files(request, userid):
             post.organization = org_object 
             post.save()
             return HttpResponseRedirect(f"/{userid}/files/")
-    return render(request, 'files.html', {'orgname': org_object.company,
+    return render(request, 'files.html', {'org_object': org_object,
                                          'userid': userid,
                                          'comment': org_object.comment_conf,
                                          'docs': docs,
@@ -99,16 +101,17 @@ def delete_file(request, userid, fileid):
 # /<uuid:userid>/commands/
 def commands(request, userid):
     org_object = get_object_or_404(OrganizationModel, pk=userid)
+    if org_object.commands == '':
+        raise Http404()
     commands_schema = commands_to_schema(json.loads(org_object.commands))
     if request.method == "POST":
         filled_output = request.POST.get("filled_output")
         org_object.commands = filled_output
         org_object.save()
-    return render(request, 'commands.html', {'orgname': org_object.company,
+    return render(request, 'commands.html', {'org_object': org_object,
                                              'userid': userid,
                                              'commands_schema': commands_schema,
                                              })
-
 
 # /<uuid:userid>/yamldata.yml
 def yaml_response(request, userid):
@@ -116,6 +119,7 @@ def yaml_response(request, userid):
     response = HttpResponse(org_object.yamldata, content_type="text/yaml")
     return response
 
+# /<uuid:userid>/commands.json
 def commands_response(request, userid):
     org_object = get_object_or_404(OrganizationModel, pk=userid)
     response = HttpResponse(org_object.commands, content_type="application/json")
