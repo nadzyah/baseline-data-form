@@ -2,10 +2,11 @@ from django import forms
 from .models import *
 import yaml
 from yaml.parser import ParserError, ScannerError
-from .modules.logs_to_schema import *
+from .modules.commands_to_schema import *
 
 class OrganizationForm(forms.ModelForm):
-    
+    """A class used to generate form object from OrganizationModel object"""
+
     class Meta:
         model = OrganizationModel
         fields = ['company', 'yamldata', 'num_conf', 'comment_conf', 'commands']
@@ -35,7 +36,6 @@ FM:
   - diag dvm device list
   - diag dvm adom list
         """
-
         not_required_fields = ['comment_conf', 'num_conf']
         for field in not_required_fields:
             self.fields[field].widget.attrs['required'] = False
@@ -44,25 +44,30 @@ FM:
             self.fields[x].widget.attrs['class'] = 'form-control'
 
     def clean_yamldata(self):
+        """Validate that yamldata field is filled correctly"""
         yamldata = self.cleaned_data['yamldata']
         try:
             yaml.safe_load(yamldata)
         except (ScannerError, ParserError):
-            raise forms.ValidationError('Parser error. Check yaml syntax in "yamldata" field',
+            raise forms.ValidationError('Parser error. Check yaml syntax\
+                                        in "yamldata" field',
                                         code='invalid')
         return yamldata
 
     def clean_commands(self):
+        """Validate that commands are provided correctly"""
         commands = self.cleaned_data['commands']
         if commands != '':
             try:
                 data = yaml.safe_load(commands)
+            # Check yaml syntax
             except (ScannerError, ParserError):
-                raise forms.ValidationError('Parser error. Check yaml syntax in "commands" field',
+                raise forms.ValidationError('Parser error. Check yaml syntax\
+                                            in "commands" field',
                                             code='invalid')
             try:
                 convert_dict_array(data)
-                print(data)
+            # Check correctness of format
             except (TypeError, AttributeError):
                 raise forms.ValidationError("Error. Specify commands in correct format",
                                             code='invalid')
@@ -70,6 +75,7 @@ FM:
 
 
 class DocumentForm(forms.ModelForm):
+    """A class used to generate form object from OrganizationModel object"""
 
     class Meta:
         model = DocumentModel
@@ -79,3 +85,4 @@ class DocumentForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['description'].widget.attrs['class'] = 'form-control'
         self.fields['description'].widget.attrs['placeholder'] = 'Например: FortiGate config'
+

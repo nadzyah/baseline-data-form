@@ -6,9 +6,13 @@ def yaml_comments(yamlobj):
     """
     Establish a correspondence between yaml comment and label
     
-    yamlobj -- string in yaml syntax
-    result -- string in json format
+    Parameters and result
+    ---------------------
+    yamlobj: string in yaml syntax
+    result: string in json format
 
+    Example
+    -------
     yamlobj = 
         UTM:  #Local FortiGate
           interfaces:  #Интерфейсы
@@ -41,12 +45,15 @@ def yaml_comments(yamlobj):
 def set_comments_back(yamlstr, labels_comments): 
     """
     Set comments back to yaml string
-    yamlstr -- string in yaml format
-    labels_comments -- one-dimention dictionary 
-    result -- string in yaml format
 
-    Example:
+    Parameters and result
+    ---------------------
+    yamlstr: string in yaml format
+    labels_comments: one-dimention dictionary 
+    result: string in yaml format
 
+    Example
+    -------
     yamlstr = 
         UTM1:
           mgmt_iface:

@@ -56,9 +56,9 @@
 </head>
 
 <body>
-  <nav class="navbar navbar-dark bg-dark mb-4 navbar-expand-lg navbar-custom" style="background-color: #212529">
+  <nav class="navbar navbar-dark bg-dark mb-4 navbar-expand-lg" style="background-color: #212529">
     <div class="container">
-	{% block orgname %}    
+	    {% block orgname %}    
       <a class="navbar-brand" href="{% url 'main:default' %}">
 	 Solidex
       </a>
@@ -67,10 +67,10 @@
   </nav>
   </div>
   <div class="full-height">
-  <div class="container">
-    {% block content %}
-    {% endblock %}
-  </div>
+    <div class="container">
+      {% block content %}
+      {% endblock %}
+    </div>
   </div>
 
   <!-- Footer -->

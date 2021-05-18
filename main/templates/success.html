@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
 
-{% block title %} {{ orgname }} {% endblock %}
+{% block title %} {{ org_object.company }} {% endblock %}
 
 {% block orgname %}
   <a class="navbar-brand" href="{% url 'main:home' userid %}">
-  {{ orgname }}
+  {{ org_object.company }}
   </a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
-  <div class="collapse navbar-collapse flex-grow-0" id="navbarNav">
+  <div class="collapse navbar-collapse" id="navbarNav">
     <div class="navbar-nav">
       <a class="nav-item nav-link" href="{% url 'main:home' userid %}">Home</a>
       <a class="nav-item nav-link" href="{% url 'main:files' userid %}">Files</a>
@@ -19,10 +19,17 @@
 {% endblock %}
 
 {% block content %}
-  <div class="jumbotron">
-    <h1 class="display-6 text-dark">Ваши данные отправлены. Спасибо</h1>
-    <a class="btn btn-secondary mt-4" href="{% url 'main:home' userid %}" role="button">
+  <div class="jumbotron text-center">
+    <h1 class="display-5 text-dark mb-3">Ваши данные отправлены. Спасибо!</h1>
+    <!--a class="btn btn-secondary mt-4" href="{% url 'main:home' userid %}" role="button">
        Редактировать данные
-    </a>
+    </a-->
+    <p class="lead">
+      Для редактирования внесённых данных воспользуйтесь навигационной панелью.
+    </p>
+    <hr>
+    <p>
+    При возникновении вопросов обращайтесь по адресу <a class="stretched-link" href="mailto:info@solidex.by" role="button">info@solidex.by</a>
+    </p>
   </div>
 {% endblock %}

@@ -6,17 +6,21 @@ import yaml
 def convert_dict_array(obj: dict):
     """
     Convert yaml array to json dict (almost).
-    obj -- python dict
-    result -- string in json format
 
-    Example:
-    Original:
+    Parameters and result
+    ---------------------
+    obj: python dict
+    result: string in json format
+
+    Example
+    ------
+    obj =
       {
         "FG-100F": [
           "show system interface"
         ]
       }
-    Result:
+    result =
       {
         "FG-100F": {
           "show system interface": ""
@@ -31,22 +35,27 @@ def convert_dict_array(obj: dict):
     return str(result).replace("'", '"')
 
 
-def commands_to_schema(logdict: dict):
+def commands_to_schema(commdict: dict):
     """
-    Convert log_commands to json-editor schema. 
-    obj -- python dict
-    result -- string in json format
+    Convert log_commands to json-editor schema.
 
-    Example:
-    Original:
+    Parameters and result
+    ---------------------
+    commdict: python dict
+    result: string in json format
+
+    Example
+    -------
+    commdict =
       {
         "FG-100F": {
           "show system interface": ""
         }
       }
-    Result:
+
+    result =
       {
-        "title": "Logs",
+        "title": "Commands",
         "type": "object",
         "properties": {
           "FG-100F":{
@@ -61,8 +70,8 @@ def commands_to_schema(logdict: dict):
         }
       }
     """
-    result = {"title": "Logs", "type": "object", "properties": {}}
-    for device_name, commands in logdict.items():
+    result = {"title": "Commands", "type": "object", "properties": {}}
+    for device_name, commands in commdict.items():
         result["properties"][device_name] = {"type": "object", "properties": {}}
         for command, output in commands.items():
             result["properties"][device_name]["properties"][command] = {"type": "string", 
@@ -72,7 +81,7 @@ def commands_to_schema(logdict: dict):
 
 if __name__ == '__main__':
     test = json.loads('{"FG-100F":["show system interface"],"FortiManager":["diag dvm device list","diag dvm adom list"]}')
-    #print(commands_to_schema(convert_dict_array(test)))
+    print(commands_to_schema(json.loads(convert_dict_array(test))))
     a = """Device1:
   - command1
   - command1
@@ -80,5 +89,5 @@ Device2:
   - command1
   - command1
 """
-    #print(commands_to_schema(json.loads(convert_dict_array(yaml.safe_load(a)))))
+    print(commands_to_schema(json.loads(convert_dict_array(yaml.safe_load(a)))))
 

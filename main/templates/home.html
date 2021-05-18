@@ -9,8 +9,8 @@
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
-  <div class="collapse navbar-collapse flex-grow-0" id="navbarNav">
-    <div class="navbar-nav">
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <div class="navbar-nav mr-auto">
       <a class="nav-item nav-link active" href="{% url 'main:home' userid %}">Home<span class="sr-only">(
 current)</span></a>
       {% if org_object.num_conf != 0 %}
@@ -62,13 +62,13 @@ current)</span></a>
  
   </style>
   <div class='columns'>
-    <div class='column col-md-12 mb-4'>
+    <div class='column col-md-12 mb-2'>
       <h4>Заполните поля формы в соответствии с их названиями</h4>
     </div>
-    <div class='column col-md-12 mb-4' id='editor_holder'></div>
     <div class='column col-md-12 mb-4'>
       <p>По завершению заполнения формы сохраните её с использованием кнопки "Отправить" (форма подлежит повторному редактированию). Кнопка "Сбросить изменения" возвращает значения полей формы к варианту последней сохранённой версии (при первом редактировании — к первоначальной).</p>
     </div>
+    <div class='column col-md-12 mb-4' id='editor_holder'></div>
     <div class='column col-md-12 mb-4'>
       <button id='submit' class='btn btn-success mr-2'>Отправить</button>
       <button id='restore' class='btn btn-warning'>Сбросить изменения</button>
@@ -186,6 +186,7 @@ current)</span></a>
 	  "network": "Подсеть",
 	  "interfaces": "Интерфейсы",
 	  "syslog": "Syslog сервер",
+    "aaa": "Сервер аутентификации",
 	  "ntp": "NTP сервер",
 	  "dns1": "Основной DNS сервер",
 	  "dns2": "Резервный DNS сервер"
