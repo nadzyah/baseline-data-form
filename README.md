@@ -3,7 +3,6 @@
 Baseline Data Form is a django web application that allows you to collect baseline data from your customers.
 
 Table of Contents:
-- [Baseline Data Form](#baseline-data-form)
 - [Installation](#installation)
 - [Usage](#usage)
   * [Add new organization](#add-new-organization)
