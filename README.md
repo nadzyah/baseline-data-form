@@ -56,34 +56,34 @@ To register an organization you need:
 
 - Information (in yaml format) about baseline data that you want to collect from your customer. Here's an example:
 
-    ```yaml
-    Router1:   #Central router
-      interfaces:
-      - ip_mask: 0.0.0.0/0   #IP address/mask
-        gateway: 0.0.0.0
-      - ip_mask: 0.0.0.0/0
-        gateway: 0.0.0.0
-    Router2:   #Branch router
-      interfaces:
-      - ip_mask: 172.22.10.1/31
-        gateway: 172.22.10.0
-    global:
-      syslog: 0.0.0.0
-      ntp: 0.0.0.0
-      dns1: 0.0.0.0
-    ```
+```yaml
+Router1:   #Central router
+  interfaces:
+  - ip_mask: 0.0.0.0/0   #IP address/mask
+    gateway: 0.0.0.0
+  - ip_mask: 0.0.0.0/0
+    gateway: 0.0.0.0
+Router2:   #Branch router
+  interfaces:
+  - ip_mask: 172.22.10.1/31
+     gateway: 172.22.10.0
+global:
+   syslog: 0.0.0.0
+   ntp: 0.0.0.0
+   dns1: 0.0.0.0
+```
 
 - Number of configuration files that you want to get from your customer (default is 0). We strongly recommend to provide the customer with a comment, which describes what configuration files you want to get.
 - (optional) Set of commands for each device that you want the customer to execute in CLI of the devices and provide you with the output. Use yaml syntax the next way:
 
-    ```yaml
-    Device1:
-      - command1
-      - command2
-    Device2:
-      - command1
-      - command3
-    ```
+```yaml
+Device1:
+  - command1
+  - command2
+Device2:
+  - command1
+  - command3
+```
 
 **Do not leave unknown fields in yaml-data with empty value** (like in the example bellow), cause the parser won't be able to detect the type of the field (actually it would be defined as null and a customer won't be able to put information here):
 
@@ -122,7 +122,60 @@ will be displayed this way:
 
 In addition, we apply the next substitutions (case sensitive) that are applied after yours (the alternative variants are set in round brackets):
 
-[Substitutions](https://www.notion.so/9a17b713a93743b9bf6a0450a237be02)
+<table>
+  <thead>
+  <tr>
+    <th>Original</th>
+    <th>Substitution</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>ip</td>
+    <td>IP адрес</td>
+  </tr>
+  <tr>
+     <td>gateway (gw)</td>
+     <td>Шлюз</td>
+  </tr>
+  <tr>
+     <td>default gateway (default gw)</td>
+     <td>Шлюз по умолчанию</td>
+  </tr>
+  <tr>
+     <td>ip_mask</td>
+     <td>IP адрес/маска</td>
+  </tr>
+  <tr>
+     <td>network</td>
+     <td>Подсеть</td>
+  </tr>
+  <tr>
+     <td>interfaces</td>
+     <td>Интерфейсы</td>
+  </tr>
+  <tr>
+     <td>syslog</td>
+     <td>Syslog-сервер</td>
+  </tr>
+  <tr>
+     <td>aaa</td>
+     <td>Сервер аутентификации</td>
+  </tr>
+  <tr>
+     <td>ntp</td>
+     <td>NTP-сервер</td>
+  </tr>
+  <tr>
+     <td>dns1</td>
+     <td>Основной DNS-сервер</td>
+  </tr>
+  <tr>
+     <td>dns2</td>
+     <td>Резервный DNS-сервер</td>
+  </tr>
+  </tbody>
+</table>
 
 ## Get the filled data
 
