@@ -2,7 +2,7 @@
 
 Baseline Data Form is a django web application that allows you to collect baseline data from your customers.
 
-Table of Contents:
+**Table of Contents:**
 - [Installation](#installation)
 - [Usage](#usage)
   * [Add new organization](#add-new-organization)
@@ -33,7 +33,7 @@ DATABASES = {
 }
 ```
 
-Once you’ve configured one of the databases, create `media/` folder in the project root directory to store config files from that customers'll upload: `mkdir media`
+Once you’ve configured one of the databases, create `media/` folder in the project root directory to store config files that customers will upload: `mkdir media`
 
 Then make migrations and run the server:
 
@@ -56,32 +56,32 @@ To register an organization you need:
 - Information (in yaml format) about baseline data that you want to collect from your customer. Here's an example:
 
 ```yaml
-Router1:   #Central router
-  interfaces:
-  - ip_mask: 0.0.0.0/0   #IP address/mask
-    gateway: 0.0.0.0
-  - ip_mask: 0.0.0.0/0
-    gateway: 0.0.0.0
-Router2:   #Branch router
-  interfaces:
-  - ip_mask: 172.22.10.1/31
-     gateway: 172.22.10.0
-global:
-   syslog: 0.0.0.0
-   ntp: 0.0.0.0
-   dns1: 0.0.0.0
+  Router1:   #Central router
+    interfaces:
+    - ip_mask: 0.0.0.0/0   #IP address/mask
+      gateway: 0.0.0.0
+    - ip_mask: 0.0.0.0/0
+      gateway: 0.0.0.0
+  Router2:   #Branch router
+    interfaces:
+    - ip_mask: 172.22.10.1/31
+       gateway: 172.22.10.0
+  global:
+     syslog: 0.0.0.0
+     ntp: 0.0.0.0
+     dns1: 0.0.0.0
 ```
 
 - Number of configuration files that you want to get from your customer (default is 0). We strongly recommend to provide the customer with a comment, which describes what configuration files you want to get.
 - (optional) Set of commands for each device that you want the customer to execute in CLI of the devices and provide you with the output. Use yaml syntax the next way:
 
 ```yaml
-Device1:
-  - command1
-  - command2
-Device2:
-  - command1
-  - command3
+  Device1:
+    - command1
+    - command2
+  Device2:
+    - command1
+    - command3
 ```
 
 **Do not leave unknown fields in yaml-data with empty value** (like in the example bellow), cause the parser won't be able to detect the type of the field (actually it would be defined as null and a customer won't be able to put information here):
