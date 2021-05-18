@@ -119,7 +119,7 @@ will be displayed this way:
 
 ![static/images/subst_example.png](static/images/subst_example.png)
 
-In addition, we apply the next substitutions (case sensitive) that are applied after yours (the alternative variants are set in round brackets):
+In addition, we apply the next substitutions (case sensitive) after yours (the alternative variants are set in round brackets):
 
 <table>
   <thead>
