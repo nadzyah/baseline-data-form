@@ -207,11 +207,11 @@ The major components of the project is OrganizationModel, which is defined in `m
 
 The DocumentModel is associated with OrganizationModel and is used to store information about the files that the customer uploads. See `models.py` file to get more information.
 
-The OrganizationForm and DocumentForm correspond the models and are used to create web-form from the models' fields. See `forms.py` file to get more information.
+The OrganizationForm and DocumentForm correspond to the models and are used to create web-form from the models' fields. See `forms.py` file to get more information.
 
 **URLs and web output**
 
-All the URLs are defined in urls.py file. Each URL corresponds the web output—the view. A view defines logic of the responses according to HTTP-requests. See views.py file to get more information. Also keep in mind that all the HTML files are stored in `main/tempales/` directory.
+All the URLs are defined in urls.py file. Each URL corresponds to the web output—the view. A view defines logic of the responses according to HTTP-requests. See views.py file to get more information. Also keep in mind that all the HTML files are stored in `main/tempales/` directory.
 
 ## Logic
 
