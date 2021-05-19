@@ -67,7 +67,7 @@ To register an organization you need:
     - ip_mask: 0.0.0.0/0
       gateway: 0.0.0.0
   Router2:   #[Branch router ##
-			 # That one which is not central]
+             # That one which is not central]
     interfaces:
     - ip_mask: 172.22.10.1/31
        gateway: 172.22.10.0
@@ -229,8 +229,8 @@ So inputs with the next formats are checked:
 	  </td>
 	  <td>
 	    210.110/22 — IP address must have 4 octets<br>
-	    192.153.3.10/33 — must be less or equal to 32<br>
-	    192.153.3.10/1 — must be greater or equal to 1<br>
+	    192.153.3.10/33 — mask must be less or equal to 32<br>
+	    192.153.3.10/-10 — mask must be greater or equal to 0<br>
     </td>
   </tr>
   <tr valign="top">
@@ -241,7 +241,7 @@ So inputs with the next formats are checked:
 		0.0.0.0/0<br>
     </td>
     <td>
-	    192.168.4.1/24 — last octet must be 0<br>
+	    192.168.4.1/24 — last octet must be 0<br> 
 	    192.16.12.0/21 — not a valid network with mask 21<br>
     </td>
   </tr>
@@ -275,7 +275,9 @@ If you want to write your label name in multiple lines, use `##` symbol as line 
                #sit amet consectetur##
                # adipiscing][format]
 ```
-   **Do NOT break format field,** even the way that is shown in the next examples:
+Line breaks will be displayed with label's name.
+
+**Do NOT break format field,** even the way that is shown in the next examples:
 ```yaml
 label1: value1   #[substitution]##
                  #[format]
