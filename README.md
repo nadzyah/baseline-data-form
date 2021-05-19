@@ -8,7 +8,7 @@ Baseline Data Form is a django application that allows you to collect baseline d
 - [Usage](#usage)
   * [Add new organization](#add-new-organization)
   * [Work with the main form](#work-with-the-main-form)
-    + [Change visibility of labels' names](#change-visibility-of-labels--names)
+    + [Change visibility of labels' names](#change-visibility-of-labels-names)
     + [Validation of the input](#validation-of-the-input)
     + [Multi-line comments](#multi-line-comments)
   * [Get the filled data](#get-the-filled-data)
