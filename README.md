@@ -197,7 +197,7 @@ So inputs with the next formats are checked:
   </tr>
   </thead>
   <tbody>
-  <tr valign="top">
+  <tr>
     <td>ipaddr</td>
     <td>115.42.150.37<br>
 			192.168.0.1<br>
@@ -213,14 +213,14 @@ So inputs with the next formats are checked:
 	33.3333.33.3 — octet number must be between [0-255]<br>
 	</td>
   </tr>
-  <tr valign="top">
+  <tr>
     <td>vlanid</td>
     <td>1<br>100<br>4093<br></td>
     <td>-10 — must be greater than 0<br>
 		    6575 — must be less than 4094
 	</td>
   </tr>
-  <tr valign="top">
+  <tr>
     <td>ipmask</td>
     <td>0.0.0.0/0<br>
 			192.168.0.1/24<br>
@@ -231,7 +231,7 @@ So inputs with the next formats are checked:
 	192.153.3.10/33 — must be less or equal to 32<br>
 	192.153.3.10/1 — must be greater or equal to 1<br>
   </tr>
-  <tr valign="top">
+  <tr>
     <td>network</td>
     <td>
 	    192.168.8.0/24<br>
