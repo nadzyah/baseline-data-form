@@ -45,11 +45,14 @@ def home(request, userid):
     json_from_yaml = json.dumps(yform, sort_keys=False)
     # Get comments in yamldata string to display them instead of
     # some labels in web-form
-    substitutions = yaml_comments(org_object.yamldata)
+    names_formats = yaml_comments(org_object.yamldata)
+    substitutions =  names_formats[0]
+    formats = names_formats[1]
     return render(request, 'home.html', {'org_object': org_object,
                                          'userid': userid,
                                          'json_from_yaml': json_from_yaml,
                                          'substitutions': substitutions,
+                                         'formats': formats,
                                          })
 
 def success(request, userid):
@@ -63,8 +66,12 @@ def success(request, userid):
     if request.method == "POST":
         after_edit = request.POST.get("after_edit")
         substitutions = request.POST.get("substitutions")
-        without_comments = yaml.dump(yaml.safe_load(json.dumps(json.loads(after_edit), ensure_ascii=False)), sort_keys=False)
-        org_object.yamldata = set_comments_back(without_comments, json.loads(substitutions))
+        formats = request.POST.get("formats")
+        yaml_no_comments = yaml.dump(yaml.safe_load(json.dumps(json.loads(after_edit), 
+                                                               sort_keys=False)), 
+                                     sort_keys=False)
+        org_object.yamldata = set_comments_back(yaml_no_comments, [json.loads(substitutions),
+                                                                   json.loads(formats)])
         org_object.save()
     return render(request, 'success.html', {'org_object': org_object,
                                             'userid': userid, 

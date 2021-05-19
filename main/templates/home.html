@@ -55,11 +55,10 @@ current)</span></a>
    .card.card-body.mb-3.bg-light {
     border: 1px dotted rgba(0,0,0,.125);
     background-color: #fcfcfc !important;
-    border-radius: 0;
+    border-radius: 0.25rem;
     /*margin-bottom: 1px !important;*/
    }
 
- 
   </style>
   <div class='columns'>
     <div class='column col-md-12 mb-2'>
@@ -70,9 +69,9 @@ current)</span></a>
     </div>
     <div class='column col-md-12 mb-4' id='editor_holder'></div>
     <div class='column col-md-12 mb-4'>
+      <span id='valid_indicator' class='badge badge-success'></span>  
       <button id='submit' class='btn btn-success mr-2'>Отправить</button>
       <button id='restore' class='btn btn-warning'>Сбросить изменения</button>
-      <!--span id='valid_indicator' class='label label-success'></span-->  
     </div>
   </div>
 
@@ -116,27 +115,163 @@ current)</span></a>
         // Seed the form with a starting value
         startval: starting_value
       });
+                
+       
+      // Replacement
+      $(document).ready(function () {
+        
+        static_substitutions = {
+          "ip": "IP адрес",
+          "gateway": "Шлюз",
+          "gw": "Шлюз",
+          "default gateway": "Шлюз по умолчанию",
+          "default gw": "Шлюз по умолчанию",
+          "ip_mask": "IP адрес/маска",
+          "network": "Подсеть",
+          "interfaces": "Интерфейсы",
+          "syslog": "Syslog сервер",
+          "aaa": "Сервер аутентификации",
+          "ntp": "NTP сервер",
+          "dns1": "Основной DNS сервер",
+          "dns2": "Резервный DNS сервер"
+        };
 
+        // Your custom substituions overwrite our static
+        allsubstitutions = Object.assign({}, static_substitutions, {{ substitutions|safe }});
+     
+        for (key in allsubstitutions){
+          $("label").filter(function() {
+             return $(this).text() == key;
+          }).html(allsubstitutions[key].replaceAll('##', '<br>'));
+        };
+
+        // Validation functions
+        function validIP(testval) {
+          let ipregex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+          return ipregex.test(testval);
+        }
+
+        function validVLAN_ID(testval) {
+          return testval > 0 && testval < 4094;
+        }
+
+        function validIPMask(testval) {
+          let ipmaskregex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/((3[0-2])|([0-2]?[0-9]{1,1}))$/;
+          return ipmaskregex.test(testval);
+        }
+        
+        function binaryIP(ipstr){
+          var fields = ipstr.split('.');
+      		var f1 = ("00000000" + parseInt(fields[0]).toString(2)).slice(-8);
+      		var f2 = ("00000000" + parseInt(fields[1]).toString(2)).slice(-8);
+      		var f3 = ("00000000" + parseInt(fields[2]).toString(2)).slice(-8);
+      		var f4 = ("00000000" + parseInt(fields[3]).toString(2)).slice(-8);
+      		return f1 + f2 + f3 + f4;
+        }
+
+        function validNetwork(testval) {
+          // If it doesn't match even ipmask
+          if (!validIPMask(testval))
+            return false;
+          let addr_mask = testval.split('/');
+          let diffmask = 32 - parseInt(addr_mask[1]);
+          if (diffmask == 0 || diffmask == 32)
+            return true;
+
+          return binaryIP(addr_mask[0]).slice(-diffmask) == '0'.repeat(diffmask);
+        }
+  
+        // Formats and functions that are associated with them
+        format_functions = {
+                            "ipaddr": validIP, 
+                            "vlanid": validVLAN_ID,
+                            "ipmask": validIPMask,
+                            "network": validNetwork
+                           };
+        // Example string
+
+        var static_formats = {
+          "ip": "ipaddr",
+          "gateway": "ipaddr",
+          "gw": "ipaddr",
+          "default gateway": "ipaddr",
+          "default gw": "ipaddr",
+          "ip_mask": "ipmask",
+          "network": "network",
+          "vlanid": "vlanid"
+        }
+
+        var label_format = Object.assign({}, static_formats, {{ formats|safe }});
+      
+        // All IDs (path to field) and HTML objects (fields) that have that IDs
+        id_fields = {};
+
+        for (label in label_format){
+          // Array with HTML inputs that correspond with labels in label_format dict
+          var watchfields = document.querySelectorAll("[id$='[" + label +"]']");
+        for (var i = 0; i < watchfields.length; i++){
+          // Replace brackets with dots to generate path from id
+          var fieldid = watchfields[i].id.replace(/[\[\]']+/g,'.').slice(0, -1);
+          // Pass HTML input object in dict
+          id_fields[fieldid] = watchfields[i];
+          };
+        };
+        
+        // Validation process
+
+        // Hook up the validation indicator to update its status whenever the editor changes
+        var indicator = document.getElementById('valid_indicator');
+        indicator.textContent = 'data is valid';
+
+        editor.on('change', function() {
+          var is_form_valid = true;
+          for (id in id_fields){
+            var field = id_fields[id];
+            // Get the label from the path
+            let label = /[^.]*$/.exec(id)[0];
+            // Get format that corresponds with the label
+            // Then get the function with corresponds to this format
+            if (! format_functions[label_format[label]](field.value)){
+              $(id_fields[id]).css('border-color', 'red');
+              is_form_valid = false;
+            }
+            else{
+              $(id_fields[id]).css('border-color', '');
+            };
+          };
+          if (is_form_valid){
+            indicator.className = 'badge badge-success';
+            indicator.textContent = 'data is valid';
+          }
+          else {
+            indicator.className = 'badge badge-danger';
+            indicator.textContent = 'data is invalid';
+          };
+        });
+        
+      });
+     
       // Send the filled form
       document.getElementById('submit').addEventListener('click',function() {
-          $.ajax({
-              url: "{% url 'main:success' userid %}",
-              type: "POST",
-              dataType: "json",
-              xhrFields: { responseType: "document" },
-              data: {
-                  url: "{% url 'main:success' userid %}",
-                  csrfmiddlewaretoken: '{{ csrf_token }}',
-                 "after_edit": JSON.stringify(editor.getValue()),
-		 "substitutions": JSON.stringify({{ substitutions|safe }})
-              },
-              success : function(json) {
-                window.location = "{% url 'main:success' userid %}"
-              },
-              error : function(xhr,errmsg,err) {
-                window.location = "{% url 'main:success' userid %}"
-              }
-          })
+        $.ajax({
+          url: "{% url 'main:success' userid %}",
+          type: "POST",
+          dataType: "json",
+          xhrFields: { responseType: "document" },
+          data: {
+            url: "{% url 'main:success' userid %}",
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            "after_edit": JSON.stringify(editor.getValue()),
+            "substitutions": JSON.stringify({{ substitutions|safe }}),
+            "formats": JSON.stringify({{ formats|safe }})
+          },
+          success : function(json) {
+            window.location = "{% url 'main:success' userid %}"
+          },
+          error : function(xhr,errmsg,err) {
+            window.location = "{% url 'main:success' userid %}"
+          }
+        })
       });
 
       // Hook up the Restore to Default button
@@ -144,79 +279,5 @@ current)</span></a>
         editor.setValue(starting_value);
       });
       
-      // Hook up the validation indicator to update its 
-      // status whenever the editor changes
-      editor.on('change', function() {
-        // Get an array of errors from the validator
-        var errors = editor.validate();
-        
-        var indicator = document.getElementById('valid_indicator');
-        
-        // Not valid
-        /*
-        if(errors.length) {
-          indicator.className = 'label alert';
-          indicator.textContent = 'not valid';
-        }
-        // Valid
-        else {
-          indicator.className = 'label success';
-          indicator.textContent = 'valid';
-        }
-        */
-      });
-    
-
-      // Replacement
-      $(document).ready(function () {
-        
-     	  substitutions = {{ substitutions|safe }}
-	  
-        for (key in substitutions){
-	       $("label").filter(function() {
-                return $(this).text() == key;
-              }).html(substitutions[key]);
-	      }
-  
-	      static_substitutions = {
-	        "ip": "IP адрес",
-	        "gateway": "Шлюз",
-	        "gw": "Шлюз",
-	        "default gateway": "Шлюз по умолчанию",
-	        "default gw": "Шлюз по умолчанию",
-	        "ip_mask": "IP адрес/маска",
-	        "network": "Подсеть",
-	        "interfaces": "Интерфейсы",
-	        "syslog": "Syslog сервер",
-          "aaa": "Сервер аутентификации",
-	        "ntp": "NTP сервер",
-	        "dns1": "Основной DNS сервер",
-	        "dns2": "Резервный DNS сервер"
-	      };
-     
-        for (key in static_substitutions){
-          $("label").filter(function() {
-             return $(this).text() == key;
-          }).html(static_substitutions[key]);
-        };     
-
-	      /*
-        for (i = 0; i < 100; i++) {   
-          $("div[class='card card-body mb-3 bg-light'][data-schemapath$='." + i +"']:contains('item')").css({"background-color": "white !important", "border": "0px"});
-        };
-
-        $("label:contains(router)").text(function(index, text) {
-            return text.replace('router', 'Router');
-        });
-
-        $("label:contains(item)").text(function(index, text) {
-            return text.replace('item', '№');
-        });
-        
-        $("label:contains(item)").css("display", "none")
-        */
-      });
-	
-
     </script>
 {% endblock %}

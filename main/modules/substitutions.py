@@ -4,52 +4,117 @@ import yaml, json
 
 def yaml_comments(yamlobj):
     """
-    Establish a correspondence between yaml comment and label
+    Establish a correspondence between
+        1) label and its name
+        2) label and format
     
+    The information about name and format must be specified as comment
+    the next way (without first space):
+        #[name][format]
+    or in case you don't want to specify label's name
+        #[][format]
+    or in case you a label doesn't have explicit format
+        #[name]
+    
+    If you want to use multi-line comment, end each line with ## symbol,
+    excluding the last one:
+        label: value  #[Lorem ipsum dolor ##
+                 #sit amet consectetur##
+                 # adipiscing][format]
+    
+    Do NOT break format field as it is shown in the next examples:
+        #[comment]##
+        #[format]
+    or
+        #[comment][for##
+        # mat]
+
     Parameters and result
     ---------------------
-    yamlobj: string in yaml syntax
-    result: string in json format
+    yamlobj: string in yaml format
+    result: python list with two string in json format
 
     Example
     -------
     yamlobj = 
-        UTM:  #Local FortiGate
-          interfaces:  #Интерфейсы
-            - ip_mask: 172.16.25.10/24  #IP адрес/Маска
-              gw: 172.16.25.1  #Шлюз
+        UTM:  #[Local FortiGate][]
+          interfaces:  #[Интерфейсы #
+                       # other text][]
+            - ip_mask: 172.16.25.10/24  #[IP адрес/Маска][ipmask]
+              gw: 172.16.25.1  #[Шлюз][ip]
             - ip_mask: 0.0.0.0/0
               gw: 0.0.0.0
 
     result =
-        {
-          "UTM": "Local FortiGate",
-          "interfaces": "Интерфейсы",
-          "ip_mask": "ip_mask",
-          "gw": "Шлюз",
-        }
+        [
+            '{
+                 "UTM": "Local FortiGate",
+                 "interfaces": "Интерфейсы # other text",
+                 "ip_mask": "IP адрес/Маска",
+                 "gw": "Шлюз"
+             }',
+            '{
+                 "ip_mask": "ipmask",
+                 "gw": "ip"
+             }'
+        ]
     """
-    result = {}
-
+    result = [{}, {}]
+    lines = yamlobj.splitlines();
+    was_multiline = 0
     for line in yamlobj.splitlines():
-        comment_startind = line.find("#")
-        if comment_startind != -1:
-            comment = line[comment_startind+1:]
-            words = line.split()
-            # Remove last : in labels
-            label = words[1][:-1] if words[0] == '-' else words[0][:-1]
-            result[label] = comment
+        name_start = line.find("#") + 1
+        if name_start != 0:
+            # Find the label itself
+            # For multi-line name it's in the first line
+            if not was_multiline:
+                words = line.split()
+                # Remove last : in labels
+                label = words[1][:-1] if words[0] == '-' else words[0][:-1]
+            # Find the next # if name is multiline
+            multiline_ind = line[name_start:].find('##')
+            # If name is in one line
+            if multiline_ind == -1:
+                name_end = line.find(']')
+                # Get the name text
+                if not was_multiline:
+                    name = line[name_start+1:name_end]
+                else:
+                    name += line[name_start:name_end]
+                # Add name if it's not empty
+                if name != '':
+                    result[0][label] = name
+                if was_multiline:   # Clear flag
+                    was_multiline = 0
+                name = ''   # Clear name
+                # Find the label's format
+                format_ = line[name_end+2:-1]
+                # Add format if it's specified
+                if format_ != '':
+                    result[1][label] = format_
+            else:
+                # Count number of lines in multi-line name
+                if not was_multiline:
+                    name = line[name_start+1:]
+                else:
+                    name += line[name_start:]
+                was_multiline = 1
+    # Convert dicts to strings
+    result[0] = str(result[0]).replace('"', r'\"').replace("'", '"')
+    result[1] = str(result[1]).replace('"', r'\"').replace("'", '"')
 
-    return str(result).replace('"', r'\"').replace("'", '"')
+    return result
 
-def set_comments_back(yamlstr, labels_comments): 
+def set_comments_back(yamlstr, names_formats): 
     """
     Set comments back to yaml string
 
     Parameters and result
     ---------------------
     yamlstr: string in yaml format
-    labels_comments: one-dimention dictionary 
+    names_formats: array with two dictionaries in the next formats:
+                          1) {'label': 'name'}
+                          2) {'label': 'format')
     result: string in yaml format
 
     Example
@@ -60,48 +125,67 @@ def set_comments_back(yamlstr, labels_comments):
             ip_mask: 172.16.25.10/24
             gw: 172.16.25.1
 
-    labels_comments = {"UTM": "Local FortiGate", "ip_mask": "IP адрес/Маска", "gw": "Шлюз"}
+    comments_formats = 
+        [{"UTM": "Local #FortiGate","mgmt_iface": "MGMT Интерфейс","gw": "Шлюз"},
+         {"ip_mask": "ipmask","gw": "ip"}]
 
     result = 
-        UTM1:  #Local FortiGate
-          mgmt_iface:
-            ip_mask: 172.16.25.10/24  #IP адрес/Маска
-            gw: 172.16.25.1  #Шлюз
+        UTM1:  #[Local ##
+               #FortiGate][]
+          mgmt_iface:   #[MGMT Интерфейс][]
+            ip_mask: 172.16.25.10/24  #[][ipmask]
+            gw: 172.16.25.1  #[Шлюз][ip]
     """
     result = yamlstr
-    
-    for label, comment in labels_comments.items():
+    names, formats = (names_formats[0], names_formats[1])
+    # Merge two dicts
+    merged = {**names, **formats}
+    for label, value in merged.items():
+        indent = (len(label) + 7)*' '
+        if label in names and label in formats:
+            # Create comment for label that contains name and format
+            # of the label in specified format
+            merged[label] = ("#[" + names[label].replace('##', '##\n' 
+                                                        + indent + "#")
+                            + "]" + "[" + formats[label] + "]")
+        elif label in names:
+            merged[label] = ("#[" + names[label].replace('##', '##\n'
+                                                        + indent + '#') 
+                            + "][]")
+        else:  # label is in formats
+            merged[label] = "#[][" + formats[label] + "]"
+
+    # Add comment to yaml-data string
+    for label, comment in merged.items():
         first_time = True
         for line in yamlstr.splitlines():
-            label_startind = line.find(label)
+            label_startind = line.find(label+":")
             if label_startind != -1 and first_time:
                 first_time = False
-                result = result.replace(line, line + "    #" + comment)
+                result = result.replace(line, line + "    " + comment)
                 break
     return result
 
 
 if __name__ == "__main__":
-    test = """UTM:  #Local FortiGate
- - ip_mask: 172.16.25.10/24  #IP адрес/Маска
-   gw: 172.16.25.1  #Шлюз
- - ip_mask: 0.0.0.0/0
-   gw: 0.0.0.0
-"""
-    #print(yaml_comments(test))
-    test2 = """UTM1:
-  mgmt_iface:
-    address_mask: 172.16.25.10/24
-    gw: 172.16.25.1
-FMG-VM64:
-  interfaces:
-  - ip: 172.16.25.22
-    network: 172.16.25.1
-  - ip: 172.16.25.22
-    network: 172.16.25.1
-global:
+    test = """global:
   syslog: 0.0.0.0
-  ntp: ""
+  ntp: 0.0.0.0
   dns1: 0.0.0.0
+web-server:  #[Веб-сервер на площадке N]
+  ip_mask: 0.0.0.0/0  #[][ipmask]
+  dns: 0.0.0.0  #[Настроенный DNS-сервер][ipaddr]
 """
-    print(set_comments_back(test2, {"UTM1": " FortiGate-100F", "mgmt_iface": " MGMT интерфейс", "address_mask": " IP адрес/маска", "global": "Общесетевые сервисы"}))
+    comms = yaml_comments(test)
+
+    print(test, comms, sep='\n')
+    testnocomm ="""global:
+  syslog: 0.0.0.0
+  ntp: 0.0.0.0
+  dns1: 0.0.0.0
+web-server:
+  ip_mask: 0.0.0.0/0
+  dns: 0.0.0.0
+"""
+    print(testnocomm, "\n", set_comments_back(testnocomm, list(map(json.loads,
+        comms))))

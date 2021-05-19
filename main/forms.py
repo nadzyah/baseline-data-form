@@ -75,7 +75,7 @@ FM:
 
 
 class DocumentForm(forms.ModelForm):
-    """A class used to generate form object from OrganizationModel object"""
+    """A class used to generate form object from DocumentModel object"""
 
     class Meta:
         model = DocumentModel
