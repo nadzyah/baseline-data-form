@@ -188,6 +188,7 @@ In addition, we apply the next substitutions (case sensitive) after yours (the a
 For some inputs we check if a customer provides the data correctly. If the data isn't correct, the input's border and the badge at the end of the form turn red. Nevertheless, a customer will be able to send invalid data.
 
 So inputs with the next formats are checked:
+
 <table>
   <thead>
   <tr>
@@ -197,41 +198,42 @@ So inputs with the next formats are checked:
   </tr>
   </thead>
   <tbody>
-  <tr>
+  <tr valign="top">
     <td>ipaddr</td>
     <td>115.42.150.37<br>
 			192.168.0.1<br>
 			110.234.52.124<br>
-	</td>
-	<td>
-	210.110 — must have 4 octets<br>
-	255 — must have 4 octets<br>
-	y.y.y.y — only digits are allowed<br>
-	255.0.0.y — only digits are allowed<br>
-	666.10.10.20 — octet number must be between [0-255]<br>
-	4444.11.11.11 — octet number must be between [0-255]<br>
-	33.3333.33.3 — octet number must be between [0-255]<br>
-	</td>
+	  </td>
+	  <td>
+	    210.110 — must have 4 octets<br>
+	    255 — must have 4 octets<br>
+	    y.y.y.y — only digits are allowed<br>
+	    255.0.0.y — only digits are allowed<br>
+	    666.10.10.20 — octet number must be between [0-255]<br>
+	    4444.11.11.11 — octet number must be between [0-255]<br>
+	    33.3333.33.3 — octet number must be between [0-255]<br>
+	  </td>
   </tr>
-  <tr>
+  <tr valign="top">
     <td>vlanid</td>
     <td>1<br>100<br>4093<br></td>
     <td>-10 — must be greater than 0<br>
 		    6575 — must be less than 4094
-	</td>
+	  </td>
   </tr>
-  <tr>
+  <tr valign="top">
     <td>ipmask</td>
     <td>0.0.0.0/0<br>
 			192.168.0.1/24<br>
 			110.234.52.124/32<br>
-	</td>
-	<td>
-	210.110/22 — IP address must have 4 octets<br>
-	192.153.3.10/33 — must be less or equal to 32<br>
-	192.153.3.10/1 — must be greater or equal to 1<br>
+	  </td>
+	  <td>
+	    210.110/22 — IP address must have 4 octets<br>
+	    192.153.3.10/33 — must be less or equal to 32<br>
+	    192.153.3.10/1 — must be greater or equal to 1<br>
+    </td>
   </tr>
-  <tr>
+  <tr valign="top">
     <td>network</td>
     <td>
 	    192.168.8.0/24<br>
