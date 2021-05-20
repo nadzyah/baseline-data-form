@@ -280,36 +280,36 @@ Keep in mind that if the names of some labels are equal, the validation of the i
 Some labels have predefined formats, which are overwritten with your comment for these labels (in case you specify the format). There're all of them:
 <table>
   <thead>
-  <tr>
-    <th>Label</th>
-    <th>Format</th>
-  </tr>
+    <tr>
+      <th>Label</th>
+      <th>Format</th>
+    </tr>
   </thead>
   <tbody>
-  <tr>
-    <td>ip</td>
-    <td>ipaddr</td>
-  </tr>
-  <tr>
-     <td>gateway (gw)</td>
-     <td>ipaddr</td>
-  </tr>
-  <tr>
-     <td>default gateway (default gw)</td>
-     <td>ipaddr</td>
-  </tr>
-  <tr>
-     <td>ip_mask</td>
-     <td>ipmask</td>
-  </tr>
-  <tr>
-     <td>network</td>
-     <td>network</td>
-  </tr>
-  <tr>
-     <td>vlanid</td>
-     <td>vlanid</td>
-  </tr>
+    <tr>
+      <td>ip</td>
+      <td>ipaddr</td>
+    </tr>
+    <tr>
+       <td>gateway (gw)</td>
+       <td>ipaddr</td>
+    </tr>
+    <tr>
+       <td>default gateway (default gw)</td>
+       <td>ipaddr</td>
+    </tr>
+    <tr>
+       <td>ip_mask</td>
+       <td>ipmask</td>
+    </tr>
+    <tr>
+       <td>network</td>
+       <td>network</td>
+    </tr>
+    <tr>
+       <td>vlanid</td>
+       <td>vlanid</td>
+    </tr>
   </tbody>
 </table>
 
