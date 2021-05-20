@@ -89,7 +89,7 @@ To register an organization you need:
     - command3
 ```
 
-**Do not leave unknown fields in yaml-data with empty value (or null value)** (like in the example bellow), cause the parser won't be able to detect the type of the field correctly (actually it would be defined as null and a customer won't be able to put information here):
+**Do NOT leave unknown fields in yaml-data with empty value (or null value)** like in the example bellow, cause the parser won't be able to detect the type of the field correctly (actually it would be defined as null and a customer won't be able to put information here):
 
 ```yaml
 global:
@@ -109,7 +109,7 @@ Once you've filled the registration form, click "Отправить" button and 
 
 ## Work with the main form
 
-The information in yaml format about baseline data that you've provided while registering an organization is transformed into a web-form. To get more information about the transformation process see "Development → Logic" section.
+The information about baseline data that you've provided while registering an organization is transformed into a web-form. To get more information about the transformation process see [Development → Logic](#logic) section.
 
 ### Change visibility of labels' names
 As you can see, visibility of some labels in your yaml-data is changed when they are displayed on the web-page. For example, the next yaml-data:
@@ -125,9 +125,11 @@ will be displayed this way:
 
 ![static/images/subst_example.png](static/images/subst_example.png)
 
+So if you want to change label's visibility, provide its name in a comment using square brackets. **Do NOT use spaces** to separate `#` and `[` symbols.
+
 Keep in mind that if the original names of some labels are equal, the substitution will be applied to all of them.
 
-In addition, we apply the next substitutions (case sensitive) after yours (the alternative variants are set in round brackets):
+In addition, we apply the next substitutions (case sensitive), which are overwritten by yours in case you provide label's name (the alternative variants are set in round brackets):
 
 <table>
   <thead>
@@ -217,9 +219,11 @@ So inputs with the next formats are checked:
   <tr valign="top">
     <td>vlanid</td>
     <td>1<br>100<br>4093<br></td>
-    <td>-10 — must be greater than 0<br>
-		    6575 — must be less than 4094
-	  </td>
+    <td>
+		-10 — must be greater than 0<br>
+		6575 — must be less than 4094<br>
+	    6y75 — must be a number<br>
+	 </td>
   </tr>
   <tr valign="top">
     <td>ipmask</td>
@@ -230,18 +234,18 @@ So inputs with the next formats are checked:
 	  <td>
 	    210.110/22 — IP address must have 4 octets<br>
 	    192.153.3.10/33 — mask must be less or equal to 32<br>
-	    192.153.3.10/-10 — mask must be greater or equal to 0<br>
+	    172.16.3.10.24 — mask must be separated from IP address with a slash<br>
     </td>
   </tr>
   <tr valign="top">
     <td>network</td>
     <td>
+	     0.0.0.0/0<br>
 	    192.168.8.0/24<br>
-	    92.16.8.0/32<br>
-		0.0.0.0/0<br>
+	    92.16.8.0/32
     </td>
     <td>
-	    192.168.4.1/24 — last octet must be 0<br> 
+	    192.168.4.1/24 — last octet must be 0 for mask 24<br> 
 	    192.16.12.0/21 — not a valid network with mask 21<br>
     </td>
   </tr>
@@ -266,7 +270,48 @@ the errors for the fields with specified formats will be displayed the next way:
 
 ![static/images/formats.png](static/images/formats.png)
 
+**Do NOT use spaces** to separate substitution and format field like it's shown in the example bellow:
+```yaml
+label: value   #[substitution] [format]
+```
+
 Keep in mind that if the names of some labels are equal, the validation of the inputs that correspond with these labels will be applied to all of them the same way.
+
+Some labels have predefined formats, which are overwritten with your comment for these labels (in case you specify the format). There're all of them:
+<table>
+  <thead>
+  <tr>
+    <th>Label</th>
+    <th>Format</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>ip</td>
+    <td>ipaddr</td>
+  </tr>
+  <tr>
+     <td>gateway (gw)</td>
+     <td>ipaddr</td>
+  </tr>
+  <tr>
+     <td>default gateway (default gw)</td>
+     <td>ipaddr</td>
+  </tr>
+  <tr>
+     <td>ip_mask</td>
+     <td>ipmask</td>
+  </tr>
+  <tr>
+     <td>network</td>
+     <td>network</td>
+  </tr>
+  <tr>
+     <td>vlanid</td>
+     <td>vlanid</td>
+  </tr>
+  </tbody>
+</table>
 
 ### Multi-line comments
 If you want to write your label name in multiple lines, use `##` symbol as line break. See the example bellow:
@@ -329,6 +374,6 @@ The conversion of yaml-data to web form is implemented the next way: yaml-data �
 
 Also this json-editor is used to generate "commands" page. Once you've provided set of commands (in yaml format) for each device that you want the customer to execute in CLI, it is transformed in web-form with text-areas as it's defined in `modules/commands_to_schema.py` file.
 
-Validation process is defined in `home.html` file (using JavaScript).
+Validation process is defined in `home.html` file (with JavaScript code).
 
 To get more information read the code, it's well documented.

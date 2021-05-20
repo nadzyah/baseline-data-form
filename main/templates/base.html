@@ -18,6 +18,10 @@
   <!-- json-editor script -->
   
   <style type="text/css">
+    body {
+      background-color: #f8f9fa;
+    }
+
     .container {
       max-width: 960px;
       margin: 0 auto;
@@ -57,11 +61,16 @@
         max-width: 100%;
     }
 
+    .jumbotron {
+        background-color: white;
+        border: 0.75px solid rgb(0,0,0,.125)
+    }
+
   </style>
 </head>
 
 <body>
-  <nav class="navbar navbar-dark bg-dark mb-4 navbar-expand-lg" style="background-color: #212529">
+  <nav class="navbar navbar-dark bg-dark mb-4 navbar-expand-lg shadow bg-dark">
     <div class="container">
 	    {% block orgname %}    
       <a class="navbar-brand" href="{% url 'main:default' %}">
@@ -71,15 +80,15 @@
     </div>
   </nav>
   </div>
-  <div class="full-height">
-    <div class="container">
+  <div class="full-height bg-light">
+    <div class="container shadow p-4 mb-5 bg-white rounded">
       {% block content %}
       {% endblock %}
     </div>
   </div>
 
   <!-- Footer -->
-  <footer class="text-center text-lg-start text-muted">
+  <footer class="text-center text-lg-start text-muted bg-white">
     <div class="text-center p-4" style="border-top: 1px solid rgba(0, 0, 0, 0.1);">
       © <a class="text-reset fw-bold" href="http://www.solidex.by/">Солидекс.</a> Все права защищены
     </div>

@@ -56,7 +56,8 @@ current)</span></a>
     border: 1px dotted rgba(0,0,0,.125);
     background-color: #fcfcfc !important;
     border-radius: 0.25rem;
-    /*margin-bottom: 1px !important;*/
+    margin-bottom: 1px !important;
+    padding-bottom: 15px;
    }
 
   </style>
@@ -105,21 +106,17 @@ current)</span></a>
       var editor = new JSONEditor(document.getElementById('editor_holder'),{
         // Enable fetching schemas via ajax
         ajax: true,
-        
         // The schema for the editor
         schema: {
           schema: {},
           format: "table",
         },
-        
         // Seed the form with a starting value
         startval: starting_value
       });
                 
-       
-      // Replacement
+      // Replacements
       $(document).ready(function () {
-        
         static_substitutions = {
           "ip": "IP адрес",
           "gateway": "Шлюз",
@@ -138,7 +135,7 @@ current)</span></a>
 
         // Your custom substituions overwrite our static
         allsubstitutions = Object.assign({}, static_substitutions, {{ substitutions|safe }});
-     
+        // Apply all substitutions 
         for (key in allsubstitutions){
           $("label").filter(function() {
              return $(this).text() == key;
@@ -160,6 +157,7 @@ current)</span></a>
           return ipmaskregex.test(testval);
         }
         
+        // Convert IP address to binary without dots between octets
         function binaryIP(ipstr){
           var fields = ipstr.split('.');
       		var f1 = ("00000000" + parseInt(fields[0]).toString(2)).slice(-8);
@@ -170,16 +168,19 @@ current)</span></a>
         }
 
         function validNetwork(testval) {
-          // If it doesn't match even ipmask
+          // If it doesn't match even ipmask it's invalid
           if (!validIPMask(testval))
             return false;
+          // Get IP address and mask
           let addr_mask = testval.split('/');
+          // Find number of last bits that must be 0
           let diffmask = 32 - parseInt(addr_mask[1]);
+          // If mask equals 32 or 0
           if (diffmask == 0 || diffmask == 32)
             return true;
-
+          // Check if last <diffmask> bits are 0
           return binaryIP(addr_mask[0]).slice(-diffmask) == '0'.repeat(diffmask);
-        }
+        }    
   
         // Formats and functions that are associated with them
         format_functions = {
@@ -188,8 +189,7 @@ current)</span></a>
                             "ipmask": validIPMask,
                             "network": validNetwork
                            };
-        // Example string
-
+        // Predefined labels
         var static_formats = {
           "ip": "ipaddr",
           "gateway": "ipaddr",
@@ -232,6 +232,7 @@ current)</span></a>
             // Get format that corresponds with the label
             // Then get the function with corresponds to this format
             if (! format_functions[label_format[label]](field.value)){
+              // Change border color to red
               $(id_fields[id]).css('border-color', 'red');
               is_form_valid = false;
             }

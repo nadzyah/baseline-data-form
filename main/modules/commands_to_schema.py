@@ -3,7 +3,7 @@
 import json
 import yaml
 
-def convert_dict_array(obj: dict):
+def convert_dict_array(obj):
     """
     Convert yaml array to json dict (almost).
 
@@ -14,18 +14,9 @@ def convert_dict_array(obj: dict):
 
     Example
     ------
-    obj =
-      {
-        "FG-100F": [
-          "show system interface"
-        ]
-      }
-    result =
-      {
-        "FG-100F": {
-          "show system interface": ""
-        }
-      }
+    obj = {"FG-100F": ["show system interface"]}
+
+    result = {"FG-100F": {"show system interface": ""}} 
     """
     result = {}
     for key, array in obj.items():
@@ -35,7 +26,7 @@ def convert_dict_array(obj: dict):
     return str(result).replace("'", '"')
 
 
-def commands_to_schema(commdict: dict):
+def commands_to_schema(commdict):
     """
     Convert log_commands to json-editor schema.
 
@@ -46,29 +37,19 @@ def commands_to_schema(commdict: dict):
 
     Example
     -------
-    commdict =
-      {
-        "FG-100F": {
-          "show system interface": ""
-        }
-      }
+    commdict = {"FG-100F": {"show system interface": ""}}
 
     result =
-      {
-        "title": "Commands",
-        "type": "object",
-        "properties": {
-          "FG-100F":{
-            "type": "object",
-            "properties": {
-              "show system interface": {
-                "type": "string",
-                "format": "textarea"
-              }
-            }
-          }
-        }
-      }
+      {"title": "Commands",
+         "type": "object",
+         "properties": {
+           "FG-100F":{
+             "type": "object",
+             "properties": {
+               "show system interface": {
+                 "type": "string",
+                 "format": "textarea"
+                 }}}}}
     """
     result = {"title": "Commands", "type": "object", "properties": {}}
     for device_name, commands in commdict.items():
