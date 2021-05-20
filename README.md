@@ -24,7 +24,7 @@ Clone the repo, then install the requirements:
 pip3 install -r requirements.txt
 ```
 
-Keep in mind that here we're using PostgreSQL database instead of SQLite, so you need to install and configure it (you can use [this tutorial](https://www.digitalocean.com/community/tutorials/how-to-use-postgresql-with-your-django-application-on-ubuntu-14-04)). Once you've installed PostgreSQL, edit `ENGINE`, `NAME`, `USER` and `PASSWORD` fields in DATABASES variable in `settings.py` file.
+Keep in mind that here we're using PostgreSQL database instead of SQLite, so you need to install and configure it (you can use [this tutorial](https://www.digitalocean.com/community/tutorials/how-to-use-postgresql-with-your-django-application-on-ubuntu-14-04)). Once you've installed PostgreSQL, edit `NAME`, `USER` and `PASSWORD` fields in DATABASES variable in `settings.py` file.
 
 If you want to revert to SQLite, set the next value for DATABASES variable:
 
