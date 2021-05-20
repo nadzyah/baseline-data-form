@@ -39,10 +39,13 @@ DATABASES = {
 
 Once you’ve configured one of the databases, create `media/` folder in the project root directory to store config files that customers will upload: `mkdir media`
 
+Also don't forget to set `Debug = False` in `settings.py` file.
+
 Then make migrations and run the server:
 
 ```bash
 python3 ./manage.py makemigrations main
+python3 ./manage.py collectstatic
 python3 ./manage.py migrate
 python3 ./manage.py runserver 0.0.0.0:<port>
 ```
