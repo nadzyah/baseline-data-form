@@ -133,10 +133,10 @@ In addition, we apply the next substitutions (case sensitive), which are overwri
 
 <table>
   <thead>
-  <tr>
-    <th>Original</th>
-    <th>Substitution</th>
-  </tr>
+    <tr>
+      <th>Original</th>
+      <th>Substitution</th>
+    </tr>
   </thead>
   <tbody>
   <tr>
@@ -278,6 +278,7 @@ label: value   #[substitution] [format]
 Keep in mind that if the names of some labels are equal, the validation of the inputs that correspond with these labels will be applied to all of them the same way.
 
 Some labels have predefined formats, which are overwritten with your comment for these labels (in case you specify the format). There're all of them:
+
 <table>
   <thead>
     <tr>
