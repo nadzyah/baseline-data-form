@@ -2,6 +2,7 @@ from django.urls import path
 from django.conf.urls import url
 from django.views.generic import RedirectView
 from django.contrib.staticfiles.storage import staticfiles_storage
+from django.views.static import serve 
 
 from . import views
 
@@ -17,7 +18,7 @@ urlpatterns = [
 
     # URL with info that the data was sent successfully 
     path("<uuid:userid>/success/", views.success, name="success"),
-    
+
     # URLs for files
     path("<uuid:userid>/files/", views.files, name="files"),
     path("<uuid:userid>/files/<uuid:fileid>/", views.delete_file, name="delete_file"),
