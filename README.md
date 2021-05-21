@@ -3,11 +3,11 @@
 
 Baseline Data Form is a django application that allows you to collect baseline data from your customers.
 
-## Online Demo
+### Online Demo
 
 Check out our demo: [https://data.solidex.by/a349beb9-b9ed-430f-9e2d-5c2c29c0432d/](https://data.solidex.by/a349beb9-b9ed-430f-9e2d-5c2c29c0432d/)
 
-**Table of Contents:**
+##Table of Contents:
 - [Installation](#installation)
 - [Usage](#usage)
   * [Add new organization](#add-new-organization)
