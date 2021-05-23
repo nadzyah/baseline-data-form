@@ -254,7 +254,7 @@ So inputs with the next formats are checked:
 	    92.16.8.0/32
     </td>
     <td>
-	    192.168.4.1/24 — last octet must be 0 for mask 24<br> 
+	    192.168.4.1/24 — invalid network with mask 24<br> 
 	    192.16.12.0/21 — not a valid network with mask 21<br>
     </td>
   </tr>
