@@ -5,7 +5,7 @@ Baseline Data Form is a django application that allows you to collect baseline d
 
 ### Online Demo
 
-Check out our demo: [https://data.solidex.by/a349beb9-b9ed-430f-9e2d-5c2c29c0432d/](https://data.solidex.by/a349beb9-b9ed-430f-9e2d-5c2c29c0432d/)
+Check out our demo: [https://data.solidex.by/580fb73e-e6be-4e66-a3d6-9fa22bcb26c3/](https://data.solidex.by/580fb73e-e6be-4e66-a3d6-9fa22bcb26c3/)
 
 ---
 
@@ -70,33 +70,32 @@ To register an organization you need:
 - Information (in yaml format) about baseline data that you want to collect from your customer. Here's an example (pay attention on comments, we'll talk about them later):
 
 ```yaml
-  Router1:   #[Central router]
-    interfaces:
-    - ip_mask: 0.0.0.0/0   #[IP address/mask][ipmask]
-      gateway: 0.0.0.0
-    - ip_mask: 0.0.0.0/0
-      gateway: 0.0.0.0
-  Router2:   #[Branch router ##
-             # That one which is not central]
-    interfaces:
-    - ip_mask: 172.22.10.1/31
-       gateway: 172.22.10.0
-  global:
-     syslog: 0.0.0.0
-     ntp: 0.0.0.0
-     dns1: 0.0.0.0
+Device1:   #[Central router]
+  ip_mask: 0.0.0.0/0   #[IP address/mask][ipmask]
+  next-hop: 0.0.0.0
+Device2:   #[Branch router ##
+           # That one which is not central]
+  interfaces:
+  - ip_mask: 172.22.10.1/31
+    next-hop: 172.22.10.0
+  - ip_mask: 0.0.0.0/0
+    next-hop: 0.0.0.0
+global:
+   syslog: 0.0.0.0
+   ntp: 0.0.0.0
+   dns1: 0.0.0.0
 ```
 
 - Number of configuration files that you want to get from your customer (default is 0). We strongly recommend to provide the customer with a comment, which describes what configuration files you want to get.
 - (optional) Set of commands for each device that you want the customer to execute in CLI of the devices and provide you with the output. Use yaml syntax the next way:
 
 ```yaml
-  Device1:
-    - command1
-    - command2
-  Device2:
-    - command1
-    - command3
+Device1:
+  - command1
+  - command2
+Device2:
+  - command1
+  - command3
 ```
 
 **Do NOT leave unknown fields in yaml-data with empty value (or null value)** like in the example bellow, cause the parser won't be able to detect the type of the field correctly (actually it would be defined as null and a customer won't be able to put information here):
