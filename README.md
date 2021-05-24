@@ -52,7 +52,7 @@ Then make migrations and run the server:
 
 ```bash
 python3 ./manage.py makemigrations main
-python3 ./manage.py collectstatic
+python3 ./manage.py collectstatic --no-input
 python3 ./manage.py migrate
 python3 ./manage.py runserver 0.0.0.0:<port>
 ```
