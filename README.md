@@ -15,10 +15,12 @@ Check out our demo: [https://data.solidex.by/580fb73e-e6be-4e66-a3d6-9fa22bcb26c
 - [Usage](#usage)
   * [Add new organization](#add-new-organization)
   * [Work with the main form](#work-with-the-main-form)
-    + [Change visibility of labels' names](#change-visibility-of-labels-names)
-    + [Validation of the input](#validation-of-the-input)
-    + [Multi-line comments](#multi-line-comments)
-  * [Get the filled data](#get-the-filled-data)
+      + [Change visibility of labels' names](#change-visibility-of-labels-names)
+      + [Validation of the input](#validation-of-the-input)
+      + [Multi-line comments](#multi-line-comments)
+  * [Upload and delete files](#upload-and-delete-files)
+  * [Access the filled data](#access-the-filled-data)
+  * [Feedback](#feedback)
 - [Development](#development)
   * [Structural components](#structural-components)
   * [Logic](#logic)
@@ -261,6 +263,8 @@ So inputs with the next formats are checked:
   </tbody>
 </table>
 
+Keep in mind that there's only IPv4 support.
+
 You should specify the format of the field in yaml comment. Do it the next way:
 ```yaml
 label: value   #[substitution][format]
@@ -340,8 +344,13 @@ label1: value1   #[substitution]##
 label2: value2   #[substitution][for##
                  #mat]
 ```
+## Upload and delete files
 
-## Get the filled data
+As it was mentioned above, all the files are stored in `/media` folder. Files from each organization are stored in isolated sub-folder with organization's uuid as the sub-folder's name.
+
+Keep in mind, when a customer delete a file, it is also deleted from the server. But when you delete an organization from the database, files that are associated with it are deleted only from the database, but continue to be stored on the server (you should delete them manually).
+
+## Access the filled data
 
 To get the last saved version of the yaml-data in plain text use `http://<server's_IP>:<port>/<uuid>/yamldata.yml`
 
@@ -361,6 +370,12 @@ The commands output is stored in json format, here's an example:
 ```
 
  To get this information use `http://<server's_IP>:<port>/<uuid>/commands.json`
+
+## Feedback
+
+A customer can provide you with a feedback (as many times as they want).
+
+
 
 # Development
 

@@ -31,14 +31,14 @@ def register(request):
             return HttpResponseRedirect(f"/{post.id}")
     return render(request, 'register.html', {'form': form})
 
-def home(request, userid):
+def home(request, orgid):
     """
     Generate main form page
 
-    Path in URL: /<uuid:userid>/
-        userid: unique id of the organization
+    Path in URL: /<uuid:orgid>/
+        orgid: unique id of the organization
     """
-    org_object = get_object_or_404(OrganizationModel, pk=userid)
+    org_object = get_object_or_404(OrganizationModel, pk=orgid)
     replaced_yaml = org_object.yamldata    # Get yaml-data to generate web-form
     yform = yaml.safe_load(replaced_yaml)  # Convert yaml-data to python object
     # Convert python object to string in json format
@@ -49,20 +49,20 @@ def home(request, userid):
     substitutions =  names_formats[0]
     formats = names_formats[1]
     return render(request, 'home.html', {'org_object': org_object,
-                                         'userid': userid,
+                                         'orgid': orgid,
                                          'json_from_yaml': json_from_yaml,
                                          'substitutions': substitutions,
                                          'formats': formats,
                                          })
 
-def success(request, userid):
+def success(request, orgid):
     """
     Generate the page to informate customer that the data was sent successfully
 
-    Path in URL: /<uuid:userid>/success/
-        userid: unique id of the organization
+    Path in URL: /<uuid:orgid>/success/
+        orgid: unique id of the organization
     """
-    org_object = get_object_or_404(OrganizationModel, pk=userid)
+    org_object = get_object_or_404(OrganizationModel, pk=orgid)
     if request.method == "POST":
         after_edit = request.POST.get("after_edit")
         substitutions = request.POST.get("substitutions")
@@ -74,7 +74,7 @@ def success(request, userid):
                                                                    json.loads(formats)])
         org_object.save()
     return render(request, 'success.html', {'org_object': org_object,
-                                            'userid': userid, 
+                                            'orgid': orgid, 
                                            })
 
 def default(request):
@@ -86,21 +86,21 @@ def default(request):
     return render(request, 'default.html')
 
 
-def files(request, userid):
+def files(request, orgid):
     """
     Generate page with possibility to upload, download and delete files
 
-    Path in URL: /<uuid:userid>/files/
-        userid: unique id of the organization
+    Path in URL: /<uuid:orgid>/files/
+        orgid: unique id of the organization
     """
-    org_object = get_object_or_404(OrganizationModel, pk=userid)
+    org_object = get_object_or_404(OrganizationModel, pk=orgid)
     # The page is accessible only if it should be used
     # That's why we check if the customer shouldn't provide any configs
     if org_object.num_conf == 0:
         raise Http404()
     docs = []
     # Get all the customer's files that they has already uploaded
-    for doc in DocumentModel.objects.filter(organization__id=userid):
+    for doc in DocumentModel.objects.filter(organization__id=orgid):
         docs.append(doc)
     form = DocumentForm(request.POST or None)
     if 'upload_doc' in request.POST:
@@ -109,9 +109,9 @@ def files(request, userid):
             post = form.save(commit=False)
             post.organization = org_object
             post.save()
-            return HttpResponseRedirect(f"/{userid}/files/")
+            return HttpResponseRedirect(f"/{orgid}/files/")
     return render(request, 'files.html', {'org_object': org_object,
-                                         'userid': userid,
+                                         'orgid': orgid,
                                          'comment': org_object.comment_conf,
                                          'docs': docs,
                                          'form': form,
@@ -136,30 +136,30 @@ def download_file(request, path):
             return response
     raise Http404()
 
-def delete_file(request, userid, fileid):
+def delete_file(request, orgid, fileid):
     """
     Delete file from server and database
 
-    Path in URL: /<uuid:userid>/files/<uuid:fileid>/
-        userid: unique id of the organization
+    Path in URL: /<uuid:orgid>/files/<uuid:fileid>/
+        orgid: unique id of the organization
         fileid: unique id of the file
     """
-    org_object = get_object_or_404(OrganizationModel, pk=userid)
+    org_object = get_object_or_404(OrganizationModel, pk=orgid)
     if request.method == 'POST':
         doc = DocumentModel.objects.get(pk=fileid)
         # Remove the file from the server
         os.remove(os.path.join(settings.MEDIA_ROOT, doc.document.name))
         doc.delete()  # Remove info about the file from the database
-    return HttpResponseRedirect(f"/{userid}/files/")
+    return HttpResponseRedirect(f"/{orgid}/files/")
 
-def commands(request, userid):
+def commands(request, orgid):
     """
     Generate page with possibility to provide commands output
 
-    Path in URL: /<uuid:userid>/commands/
-        userid: unique id of the organization
+    Path in URL: /<uuid:orgid>/commands/
+        orgid: unique id of the organization
     """
-    org_object = get_object_or_404(OrganizationModel, pk=userid)
+    org_object = get_object_or_404(OrganizationModel, pk=orgid)
     # The page is accessible only if it should be used
     # That's why we check if "commands" field is empty
     if org_object.commands == '':
@@ -172,29 +172,63 @@ def commands(request, userid):
         org_object.commands = filled_output
         org_object.save()
     return render(request, 'commands.html', {'org_object': org_object,
-                                             'userid': userid,
+                                             'orgid': orgid,
                                              'commands_schema': commands_schema,
                                              })
 
-def yaml_response(request, userid):
+def feedback(request, orgid):
+    """
+    Provide user with page to write a feedback
+
+    Path in URL: /<uuid:orgid>/feedback/
+        orgid: unique id of the organization
+    """
+
+    org_object = get_object_or_404(OrganizationModel, pk=orgid)
+    form = FeedbackForm(request.POST or None)
+    if request.method == 'POST':
+        form = FeedbackForm(request.POST, request.FILES)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.organization = org_object
+            post.save()
+            return HttpResponseRedirect(f"/{orgid}/feedback/thanks")
+    return render(request, 'feedback.html', {'org_object': org_object,
+                                             'orgid': orgid,
+                                             'form': form,
+                                            })
+
+def feedback_thanks(request, orgid):
+    """
+    Generate the page to informate customer that the feedback was sent successfully
+
+    Path in URL: /<uuid:orgid>/feedback/thanks/
+        orgid: unique id of the organization
+    """
+    org_object = get_object_or_404(OrganizationModel, pk=orgid)
+    return render(request, 'feedback_thanks.html', {'org_object': org_object,
+                                            'orgid': orgid, 
+                                           })
+
+def yaml_response(request, orgid):
     """
     Send yamldata field in plain yaml text
 
-    Path in URL: /<uuid:userid>/yamldata.yml
-        userid: unique id of the organization
+    Path in URL: /<uuid:orgid>/yamldata.yml
+        orgid: unique id of the organization
     """
-    org_object = get_object_or_404(OrganizationModel, pk=userid)
+    org_object = get_object_or_404(OrganizationModel, pk=orgid)
     response = HttpResponse(org_object.yamldata, content_type="text/yaml")
     return response
 
-def commands_response(request, userid):
+def commands_response(request, orgid):
     """
     Send commands field in json format
 
-    Path in URL: /<uuid:userid>/commands.json
-        userid: unique id of the organization
+    Path in URL: /<uuid:orgid>/commands.json
+        orgid: unique id of the organization
     """
-    org_object = get_object_or_404(OrganizationModel, pk=userid)
+    org_object = get_object_or_404(OrganizationModel, pk=orgid)
     response = HttpResponse(org_object.commands, content_type="application/json")
     return response
 

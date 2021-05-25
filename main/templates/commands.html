@@ -3,7 +3,7 @@
 {% block title %} {{ org_object.company }} {% endblock %}
 
 {% block orgname %}
-  <a class="navbar-brand" href="{% url 'main:home' userid %}">
+  <a class="navbar-brand" href="{% url 'main:home' orgid %}">
   {{ org_object.company }}
   </a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -11,11 +11,12 @@
   </button>
   <div class="collapse navbar-collapse" id="navbarNav">
     <div class="navbar-nav">
-      <a class="nav-item nav-link" href="{% url 'main:home' userid %}">Home</a>
+      <a class="nav-item nav-link" href="{% url 'main:home' orgid %}">Home</a>
       {% if org_object.num_conf != 0 %}
-        <a class="nav-item nav-link" href="{% url 'main:files' userid %}">Files</a>
+        <a class="nav-item nav-link" href="{% url 'main:files' orgid %}">Files</a>
       {% endif %}
-     <a class="nav-item nav-link active" href="{% url 'main:commands' userid %}">Commands<span class="sr-only">(current)</span></a>
+     <a class="nav-item nav-link active" href="{% url 'main:commands' orgid %}">Commands<span class="sr-only">(current)</span></a>
+     <a class="nav-item nav-link" href="{% url 'main:feedback' orgid %}">Feedback</a>
     </div>
   </div>  
 {% endblock %}
@@ -76,20 +77,20 @@
     
     document.getElementById('submit').addEventListener('click',function() {
       $.ajax({
-          url: "{% url 'main:commands' userid %}",
+          url: "{% url 'main:commands' orgid %}",
           type: "POST",
           dataType: "json",
           xhrFields: { responseType: "document" },
           data: {
-            url: "{% url 'main:commands' userid %}",
+            url: "{% url 'main:commands' orgid %}",
             csrfmiddlewaretoken: '{{ csrf_token }}',
             "filled_output": JSON.stringify(editor.getValue())
           },
           success : function(json) {
-            window.location = "{% url 'main:success' userid %}"
+            window.location = "{% url 'main:success' orgid %}"
           },
           error : function(xhr,errmsg,err) {
-            window.location = "{% url 'main:success' userid %}"
+            window.location = "{% url 'main:success' orgid %}"
           }
       })
     });

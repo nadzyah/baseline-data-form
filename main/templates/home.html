@@ -3,7 +3,7 @@
 {% block title %} {{ org_object.company }} {% endblock %}
 
 {% block orgname %}
-  <a class="navbar-brand" href="{% url 'main:home' userid %}">
+  <a class="navbar-brand" href="{% url 'main:home' orgid %}">
   {{ org_object.company }}
   </a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -11,14 +11,15 @@
   </button>
   <div class="collapse navbar-collapse" id="navbarNav">
     <div class="navbar-nav mr-auto">
-      <a class="nav-item nav-link active" href="{% url 'main:home' userid %}">Home<span class="sr-only">(
+      <a class="nav-item nav-link active" href="{% url 'main:home' orgid %}">Home<span class="sr-only">(
 current)</span></a>
       {% if org_object.num_conf != 0 %}
-        <a class="nav-item nav-link" href="{% url 'main:files' userid %}">Files</a>
+        <a class="nav-item nav-link" href="{% url 'main:files' orgid %}">Files</a>
       {% endif %}
       {% if org_object.commands != '' %}
-        <a class="nav-item nav-link" href="{% url 'main:commands' userid %}">Commands</a>
+        <a class="nav-item nav-link" href="{% url 'main:commands' orgid %}">Commands</a>
       {% endif %}
+      <a class="nav-item nav-link" href="{% url 'main:feedback' orgid %}">Feedback</a>
     </div>
   </div>
 {% endblock %}
@@ -37,7 +38,7 @@ current)</span></a>
      font-weight: normal;
    }
    
-   label.h4 {
+   label.h4, label.h5 {
      margin-top: 10px;
    }
   
@@ -285,22 +286,22 @@ current)</span></a>
       // Send the filled form
       document.getElementById('submit').addEventListener('click',function() {
         $.ajax({
-          url: "{% url 'main:success' userid %}",
+          url: "{% url 'main:success' orgid %}",
           type: "POST",
           dataType: "json",
           xhrFields: { responseType: "document" },
           data: {
-            url: "{% url 'main:success' userid %}",
+            url: "{% url 'main:success' orgid %}",
             csrfmiddlewaretoken: '{{ csrf_token }}',
             "after_edit": JSON.stringify(editor.getValue()),
             "substitutions": JSON.stringify({{ substitutions|safe }}),
             "formats": JSON.stringify({{ formats|safe }})
           },
           success : function(json) {
-            window.location = "{% url 'main:success' userid %}"
+            window.location = "{% url 'main:success' orgid %}"
           },
           error : function(xhr,errmsg,err) {
-            window.location = "{% url 'main:success' userid %}"
+            window.location = "{% url 'main:success' orgid %}"
           }
         })
       });

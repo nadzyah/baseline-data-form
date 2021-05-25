@@ -86,3 +86,15 @@ class DocumentForm(forms.ModelForm):
         self.fields['description'].widget.attrs['class'] = 'form-control'
         self.fields['description'].widget.attrs['placeholder'] = 'Например: FortiGate config'
 
+class FeedbackForm(forms.ModelForm):
+    """A class used to represent feedback form"""
+
+    class Meta:
+        model = FeedbackModel
+        fields = ['is_user_friendly', 'how_to_make_it_better']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for x in self.fields:
+            self.fields[x].widget.attrs['class'] = 'form-control'
+

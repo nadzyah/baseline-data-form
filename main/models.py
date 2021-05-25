@@ -23,6 +23,10 @@ class OrganizationModel(models.Model):
     commands: TextField
         set of commands for each device (you provide it in yaml format,
         then it's converted and stored in json format)
+    created_at: DateTimeField
+        represents date and time when the object was created
+    last_updated_at: DateTimeField
+        represents date and time when the object was last updated
     """
 
     company = models.CharField(help_text='Company name', max_length=200)
@@ -38,6 +42,8 @@ class OrganizationModel(models.Model):
                                     max_length=500,
                                     blank=True)
     commands = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.company
@@ -56,7 +62,7 @@ class DocumentModel(models.Model):
     Attributes
     ----------
     id: UUIDField
-        the unique identifier of the organization
+        the unique identifier of the file
     organization: ForeignKey
         the OrganizationModel object that is associated with the file
     description: CharField
@@ -64,12 +70,15 @@ class DocumentModel(models.Model):
         uploading it
     document: FileField
         the file instance
+    uploaded_at: DateTimeField
+        represents date and time when the document was uploaded
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)
     organization = models.ForeignKey(OrganizationModel, on_delete=models.CASCADE)
     description = models.CharField(max_length=255, blank=True)
     document = models.FileField(upload_to=get_upload_path)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
 
     @property
     def org_id(self):
@@ -82,3 +91,40 @@ class DocumentModel(models.Model):
         """Delete information about the file from the database"""
         self.document.delete()
         super().delete(*args, **kwargs)
+
+class FeedbackModel(models.Model):
+    """
+    A class used to represent feedbacks from customers
+
+    Attributes
+    ----------
+    id: UUIDField
+        the unique identifier of the feedback
+    organization: ForeignKey
+        the organization which the author of the feedback belongs to
+    is_user_friendly: CharField
+        answer on the question "Был ли портал удобен в использовании при 
+        предоставлении исходных данных?"
+    how_to_make_it_better: TextField
+        answer on the question "Что бы Вы посоветовали улучшить в функционале портала?"
+    submitted_at: DateTimeField
+        represents date and time when the feedback was submitted
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)
+    organization = models.ForeignKey(OrganizationModel, on_delete=models.CASCADE)
+    is_user_friendly = models.CharField("Был ли портал удобен в использовании при\
+            предоставлении исходных данных?", max_length=255, choices=(
+                                                            ("Да", "Да"),
+                                                            ("Частично", "Частично"),
+                                                            ("Нет", "Нет"),
+                                                        )
+                                       )   
+
+    how_to_make_it_better = models.TextField("Что бы Вы посоветовали улучшить\
+                                              в функционале портала?")
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return (self.organization.company + "-" +
+                str(self.submitted_at.date()) + "-" +
+                str(self.submitted_at.time())[:-7])

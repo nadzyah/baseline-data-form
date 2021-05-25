@@ -14,23 +14,27 @@ urlpatterns = [
     url(r'^favicon\.ico$', RedirectView.as_view(url=staticfiles_storage.url("favicons/favicon.ico"), permanent=True), name='favicon'),
     
     # URL for the main form
-    path("<uuid:userid>/", views.home, name="home"),
+    path("<uuid:orgid>/", views.home, name="home"),
 
     # URL with info that the data was sent successfully 
-    path("<uuid:userid>/success/", views.success, name="success"),
+    path("<uuid:orgid>/success/", views.success, name="success"),
 
     # URLs for files
-    path("<uuid:userid>/files/", views.files, name="files"),
-    path("<uuid:userid>/files/<uuid:fileid>/", views.delete_file, name="delete_file"),
+    path("<uuid:orgid>/files/", views.files, name="files"),
+    path("<uuid:orgid>/files/<uuid:fileid>/", views.delete_file, name="delete_file"),
     path(r'media/<path:path>', views.download_file, name="download_file"),
     
     # URLs for commands
-    path("<uuid:userid>/commands/", views.commands, name="commands"),
-    
+    path("<uuid:orgid>/commands/", views.commands, name="commands"),
+   
+    # Feedback
+    path("<uuid:orgid>/feedback/", views.feedback, name="feedback"),
+    path("<uuid:orgid>/feedback/thanks/", views.feedback_thanks, name="feedback_thanks"),
+
     # URLs to get fields in plain text
-    path("<uuid:userid>/yamldata.yml", views.yaml_response, name="yaml_response"),
-    path("<uuid:userid>/yamldata.yml/", views.yaml_response, name="yaml_response"),
+    path("<uuid:orgid>/yamldata.yml", views.yaml_response, name="yaml_response"),
+    path("<uuid:orgid>/yamldata.yml/", views.yaml_response, name="yaml_response"),
     
-    path("<uuid:userid>/commands.json", views.commands_response, name="commands_response"),
-    path("<uuid:userid>/commands.json/", views.commands_response, name="commands_response"),
+    path("<uuid:orgid>/commands.json", views.commands_response, name="commands_response"),
+    path("<uuid:orgid>/commands.json/", views.commands_response, name="commands_response"),
 ]
