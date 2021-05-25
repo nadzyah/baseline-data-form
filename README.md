@@ -348,7 +348,7 @@ label2: value2   #[substitution][for##
 
 As it was mentioned above, all the files are stored in `/media` folder. Files from each organization are stored in isolated sub-folder with organization's uuid as the sub-folder's name.
 
-Keep in mind, when a customer delete a file, it is also deleted from the server. But when you delete an organization from the database, files that are associated with it are deleted only from the database, but continue to be stored on the server (you should delete them manually).
+Keep in mind, when a customer delete a file, it is also deleted from the server. But when you delete an organization from the database, files that are associated with it are deleted only from the database. They continue to be stored on the server and you should remove them manually.
 
 ## Access the filled data
 
