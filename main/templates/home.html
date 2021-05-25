@@ -34,12 +34,9 @@ current)</span></a>
      bottom: 0;
    }
   
-   label {
-     font-weight: normal;
-   }
-   
-   label.h4, label.h5 {
-     margin-top: 10px;
+   label.h5 {
+     margin-top: 5px;
+     font-weight: bold;
    }
   
    .required::after {
@@ -127,7 +124,7 @@ current)</span></a>
           if (typeof elem != 'string')
             return false;
         return (elem.split('.').length - 1) == 1
-      }).attr('class', 'h4');
+      }).attr('class', 'h5');
 
       // h5 to sub labels
       $("label").filter(function(){
@@ -135,16 +132,8 @@ current)</span></a>
           if (typeof elem != 'string')
             return false;
         return (elem.split('.').length - 1) == 2
-      }).attr('class', 'h5');
+      }).css('font-weight', 'bold');
 
-      /*// bold font-weight fot others
-      $("label").filter(function(){
-        var elem = $(this).parent('div').attr('data-schemapath');
-          if (typeof elem != 'string')
-            return false;
-          return (elem.split('.').length - 1) > 2
-      }).css('font-weight', 'bold');*/
-      
       
       // Replacements
       $(document).ready(function () {

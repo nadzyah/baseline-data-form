@@ -92,6 +92,10 @@ class DocumentModel(models.Model):
         self.document.delete()
         super().delete(*args, **kwargs)
 
+    class Meta:
+        verbose_name = "Config file"
+
+
 class FeedbackModel(models.Model):
     """
     A class used to represent feedbacks from customers
@@ -126,3 +130,7 @@ class FeedbackModel(models.Model):
 
     def __str__(self):
         return self.organization.company + "-" + str(self.submitted_at.date())
+
+    class Meta:
+        verbose_name = "Review"
+
