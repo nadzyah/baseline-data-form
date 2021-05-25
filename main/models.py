@@ -46,7 +46,7 @@ class OrganizationModel(models.Model):
     last_updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.company
+        return self.company + "-" + str(self.created_at.date())
 
     class Meta:
         verbose_name = "Organization"
@@ -85,7 +85,7 @@ class DocumentModel(models.Model):
         return self.organization.id
     
     def __str__(self):
-        return self.document.name
+        return str(self.organization) + "_" + self.document.name[37:]
 
     def delete(self, *args, **kwargs):
         """Delete information about the file from the database"""
@@ -122,9 +122,7 @@ class FeedbackModel(models.Model):
 
     how_to_make_it_better = models.TextField("Что бы Вы посоветовали улучшить\
                                               в функционале портала?")
-    submitted_at = models.DateTimeField(auto_now_add=True)
+    submitted_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return (self.organization.company + "-" +
-                str(self.submitted_at.date()) + "-" +
-                str(self.submitted_at.time())[:-7])
+        return self.organization.company + "-" + str(self.submitted_at.date())

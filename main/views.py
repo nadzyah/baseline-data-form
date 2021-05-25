@@ -185,9 +185,13 @@ def feedback(request, orgid):
     """
 
     org_object = get_object_or_404(OrganizationModel, pk=orgid)
-    form = FeedbackForm(request.POST or None)
+    feedback_obj = FeedbackModel.objects.filter(organization__id=orgid)
+    if feedback_obj:
+        instance = feedback_obj[0]
+    else:
+        instance = FeedbackModel()
+    form = FeedbackForm(request.POST or None, instance=instance)
     if request.method == 'POST':
-        form = FeedbackForm(request.POST, request.FILES)
         if form.is_valid():
             post = form.save(commit=False)
             post.organization = org_object
