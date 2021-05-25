@@ -34,7 +34,11 @@ current)</span></a>
    }
   
    label {
-     font-weight: bold;
+     font-weight: normal;
+   }
+   
+   label.h4 {
+     margin-top: 10px;
    }
   
    .required::after {
@@ -114,7 +118,33 @@ current)</span></a>
         // Seed the form with a starting value
         startval: starting_value
       });
-                
+
+      // Add headers to labels
+      // h3 to main labels
+      $("label").filter(function(){
+        var elem = $(this).parent('div').attr('data-schemapath');
+          if (typeof elem != 'string')
+            return false;
+        return (elem.split('.').length - 1) == 1
+      }).attr('class', 'h4');
+
+      // h5 to sub labels
+      $("label").filter(function(){
+        var elem = $(this).parent('div').attr('data-schemapath');
+          if (typeof elem != 'string')
+            return false;
+        return (elem.split('.').length - 1) == 2
+      }).attr('class', 'h5');
+
+      /*// bold font-weight fot others
+      $("label").filter(function(){
+        var elem = $(this).parent('div').attr('data-schemapath');
+          if (typeof elem != 'string')
+            return false;
+          return (elem.split('.').length - 1) > 2
+      }).css('font-weight', 'bold');*/
+      
+      
       // Replacements
       $(document).ready(function () {
         static_substitutions = {
@@ -175,8 +205,8 @@ current)</span></a>
           let addr_mask = testval.split('/');
           // Find number of last bits that must be 0
           let diffmask = 32 - parseInt(addr_mask[1]);
-          // If mask equals 32 or 0
-          if (diffmask == 0 || diffmask == 32)
+          // If mask equals 32 or testval is 0.0.0.0/0
+          if (diffmask == 0 || testval == '0.0.0.0/0')
             return true;
           // Check if last <diffmask> bits are 0
           return binaryIP(addr_mask[0]).slice(-diffmask) == '0'.repeat(diffmask);
