@@ -46,7 +46,8 @@ class OrganizationModel(models.Model):
     last_updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.company + "-" + str(self.created_at.date())
+        date = (self.created_at.day, self.created_at.month, self.created_at.year)
+        return self.company + "-" + "%02d-%02d-%d" % date
 
     class Meta:
         verbose_name = "Organization"
@@ -129,7 +130,8 @@ class FeedbackModel(models.Model):
     submitted_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.organization.company + "-" + str(self.submitted_at.date())
+        date = (self.submitted_at.day, self.submitted_at.month, self.submitted_at.year)
+        return self.organization.company + "-" + "%02d-%02d-%d" % date
 
     class Meta:
         verbose_name = "Review"

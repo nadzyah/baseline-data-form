@@ -102,8 +102,8 @@ current)</span></a>
       // This is the starting value for the editor
       // We will use this to seed the initial editor 
       // and to provide a "Restore to Default" button.
-      var starting_value = JSON.parse(JSON.stringify({{ json_from_yaml|safe }}));
-     
+      var starting_value = JSON.parse(JSON.stringify({{ json_from_yaml|safe }}).replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t"));
+
       // Initialize the editor
       var editor = new JSONEditor(document.getElementById('editor_holder'),{
         // Enable fetching schemas via ajax
@@ -111,7 +111,7 @@ current)</span></a>
         // The schema for the editor
         schema: {
           schema: {},
-          format: "table",
+        //  format: "table",
         },
         // Seed the form with a starting value
         startval: starting_value
@@ -154,7 +154,19 @@ current)</span></a>
         };
 
         // Your custom substituions overwrite our static
-        allsubstitutions = Object.assign({}, static_substitutions, {{ substitutions|safe }});
+        substitutions = {{ substitutions|safe }};
+        // Remove quotes from label's name if it is a number
+        for (label in substitutions) {
+           if (!isNaN(label.substring(1, label.length-1))
+               && !isNaN(parseFloat(label.substring(1, label.length-1)))
+               && label[0] == "'" && label[label.length-1] == "'" ){
+                let newkey = label.substring(1, label.length-1); 
+                Object.defineProperty(substitutions, newkey, Object.getOwnPropertyDescriptor(substitutions, label));
+                delete substitutions[label];
+           };
+        };
+
+        var allsubstitutions = Object.assign({}, static_substitutions, substitutions);
         // Apply all substitutions 
         for (key in allsubstitutions){
           $("label").filter(function() {
@@ -221,14 +233,28 @@ current)</span></a>
           "vlanid": "vlanid"
         }
 
-        var label_format = Object.assign({}, static_formats, {{ formats|safe }});
-      
+        label_format = {{ formats|safe }};
+       
+        // Remove quotes from label's name if it is a number
+        for (label in label_format) {
+           if (!isNaN(label.substring(1, label.length-1))
+               && !isNaN(parseFloat(label.substring(1, label.length-1)))
+               && (label[0] == "'" || label[0] == '"')
+               && label[label.length-1] == "'" || label[label.length-1] == '"'){
+                 let newkey = label.substring(1, label.length-1); 
+                 Object.defineProperty(label_format, newkey, Object.getOwnPropertyDescriptor(label_format, label));
+                delete label_format[label];
+           };
+        };
+
+        var all_label_format = Object.assign({}, static_formats, label_format);
+
         // All IDs (path to field) and HTML objects (fields) that have that IDs
         id_fields = {};
 
-        for (label in label_format){
-          // Array with HTML inputs that correspond with labels in label_format dict
-          var watchfields = document.querySelectorAll("[id$='[" + label +"]']");
+        for (label in all_label_format){
+          // Array with HTML inputs that correspond with labels in all_label_format dict
+          var watchfields = document.querySelectorAll('[id$="[' + label +']"]');
         for (var i = 0; i < watchfields.length; i++){
           // Replace brackets with dots to generate path from id
           var fieldid = watchfields[i].id.replace(/[\[\]']+/g,'.').slice(0, -1);
@@ -251,7 +277,7 @@ current)</span></a>
             let label = /[^.]*$/.exec(id)[0];
             // Get format that corresponds with the label
             // Then get the function with corresponds to this format
-            if (! format_functions[label_format[label]](field.value)){
+            if (! format_functions[all_label_format[label]](field.value)){
               // Change border color to red
               $(id_fields[id]).css('border-color', 'red');
               is_form_valid = false;
@@ -275,12 +301,12 @@ current)</span></a>
       // Send the filled form
       document.getElementById('submit').addEventListener('click',function() {
         $.ajax({
-          url: "{% url 'main:success' orgid %}",
+          url: "{% url 'main:home' orgid %}",
           type: "POST",
           dataType: "json",
           xhrFields: { responseType: "document" },
           data: {
-            url: "{% url 'main:success' orgid %}",
+            url: "{% url 'main:home' orgid %}",
             csrfmiddlewaretoken: '{{ csrf_token }}',
             "after_edit": JSON.stringify(editor.getValue()),
             "substitutions": JSON.stringify({{ substitutions|safe }}),

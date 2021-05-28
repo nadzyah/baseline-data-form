@@ -20,9 +20,7 @@ def convert_dict_array(obj):
     """
     result = {}
     for key, array in obj.items():
-        result[key] = {}
-        for x in array:
-            result[key][x] = ""
+        result[key] = dict(zip(array, ["" for x in range(len(array))]))
     return str(result).replace("'", '"')
 
 
@@ -62,7 +60,7 @@ def commands_to_schema(commdict):
 
 if __name__ == '__main__':
     test = json.loads('{"FG-100F":["show system interface"],"FortiManager":["diag dvm device list","diag dvm adom list"]}')
-    print(commands_to_schema(json.loads(convert_dict_array(test))))
+    #print(commands_to_schema(json.loads(convert_dict_array(test))))
     a = """Device1:
   - command1
   - command1
@@ -70,5 +68,6 @@ Device2:
   - command1
   - command1
 """
-    print(commands_to_schema(json.loads(convert_dict_array(yaml.safe_load(a)))))
+    print(convert_dict_array(yaml.safe_load(a)))
+    #print(commands_to_schema(json.loads(convert_dict_array(yaml.safe_load(a)))))
 

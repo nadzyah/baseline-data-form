@@ -100,8 +100,8 @@ def yaml_comments(yamlobj):
                     name += line[name_start:]
                 was_multiline = 1
     # Convert dicts to strings
-    result[0] = str(result[0]).replace('"', r'\"').replace("'", '"')
-    result[1] = str(result[1]).replace('"', r'\"').replace("'", '"')
+    result[0] = json.dumps(result[0], sort_keys=False)
+    result[1] = json.dumps(result[1], sort_keys=False)
 
     return result
 
@@ -168,24 +168,22 @@ def set_comments_back(yamlstr, names_formats):
 
 
 if __name__ == "__main__":
-    test = """global:
-  syslog: 0.0.0.0
-  ntp: 0.0.0.0
-  dns1: 0.0.0.0
-web-server:  #[Веб-сервер на площадке N]
-  ip_mask: 0.0.0.0/0  #[][ipmask]
-  dns: 0.0.0.0  #[Настроенный DNS-сервер][ipaddr]
+    test = """mgmt:
+  accounts:
+    radius:
+      ip: 10.254.12.211 #[][ipaddr]
+      name: Velcom_ACS
+    local:
+      - username: admin
+        password: nTram299
+  trusthost:
+    '1': 10.0.0.0/8 #[][ipmask]
+    '2': 172.16.0.0/12 #[][ipmask]
 """
     comms = yaml_comments(test)
-
-    print(test, comms, sep='\n')
-    testnocomm ="""global:
-  syslog: 0.0.0.0
-  ntp: 0.0.0.0
-  dns1: 0.0.0.0
-web-server:
-  ip_mask: 0.0.0.0/0
-  dns: 0.0.0.0
-"""
-    print(testnocomm, "\n", set_comments_back(testnocomm, list(map(json.loads,
-        comms))))
+    testnocomms = yaml.dump(yaml.safe_load(test))
+    
+    print("Comments:", comms,
+          "Without comms:", testnocomms,
+          "Set comments back:", set_comments_back(testnocomms, list(map(json.loads, comms))),
+          sep='\n')

@@ -48,6 +48,15 @@ def home(request, orgid):
     names_formats = yaml_comments(org_object.yamldata)
     substitutions =  names_formats[0]
     formats = names_formats[1]
+    if request.method == "POST":
+        after_edit = request.POST.get("after_edit")
+        substitutions = request.POST.get("substitutions")
+        formats = request.POST.get("formats")
+        yaml_no_comments = yaml.safe_dump(json.loads(after_edit), sort_keys=False)
+        org_object.yamldata = set_comments_back(yaml_no_comments, [json.loads(substitutions),
+                                                                   json.loads(formats)])
+        org_object.save()
+        return HttpResponseRedirect(f"/{orgid}/files/")
     return render(request, 'home.html', {'org_object': org_object,
                                          'orgid': orgid,
                                          'json_from_yaml': json_from_yaml,
@@ -63,16 +72,6 @@ def success(request, orgid):
         orgid: unique id of the organization
     """
     org_object = get_object_or_404(OrganizationModel, pk=orgid)
-    if request.method == "POST":
-        after_edit = request.POST.get("after_edit")
-        substitutions = request.POST.get("substitutions")
-        formats = request.POST.get("formats")
-        yaml_no_comments = yaml.dump(yaml.safe_load(json.dumps(json.loads(after_edit), 
-                                                               sort_keys=False)), 
-                                     sort_keys=False)
-        org_object.yamldata = set_comments_back(yaml_no_comments, [json.loads(substitutions),
-                                                                   json.loads(formats)])
-        org_object.save()
     return render(request, 'success.html', {'org_object': org_object,
                                             'orgid': orgid, 
                                            })
