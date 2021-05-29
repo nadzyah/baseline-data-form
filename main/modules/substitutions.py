@@ -140,8 +140,15 @@ def set_comments_back(yamlstr, names_formats):
     names, formats = (names_formats[0], names_formats[1])
     # Merge two dicts
     merged = {**names, **formats}
-    for label, value in merged.items():
+    for label in list(merged.keys()):
         indent = (len(label) + 7)*' '
+        # If label is a positive number in quotes, replace quotes with single quotes
+        # as yaml loader does
+        if label[1:-1].isdigit() or label[1:-1].replace(".", "", 1).isdigit():
+            merged["'" + label[1:-1] + "'"] = merged.pop(label)
+            names["'" + label[1:-1] + "'"] = names.pop(label)
+            formats["'" + label[1:-1] + "'"] = formats.pop(label)
+            label = "'" + label[1:-1] + "'"
         if label in names and label in formats:
             # Create comment for label that contains name and format
             # of the label in specified format
@@ -168,22 +175,19 @@ def set_comments_back(yamlstr, names_formats):
 
 
 if __name__ == "__main__":
-    test = """mgmt:
-  accounts:
-    radius:
-      ip: 10.254.12.211 #[][ipaddr]
-      name: Velcom_ACS
-    local:
-      - username: admin
-        password: nTram299
-  trusthost:
-    '1': 10.0.0.0/8 #[][ipmask]
-    '2': 172.16.0.0/12 #[][ipmask]
+    testnocomms = """trusthost:
+  '1': n10.0.0.0/8
+  '1.1': 172.16.0.0/12l
 """
-    comms = yaml_comments(test)
-    testnocomms = yaml.dump(yaml.safe_load(test))
+    #comms = [{'"1"': 'one', '"1.1"': 'one dot one'},
+    #         {'"1"': 'ipmask', '"1.1"': 'ipmask'}]
+
+    comms = [{"\"1\"":"one","\"1.1\"":"one dot one"},
+             {"\"1\"":"ipmask","\"1.1\"":"ipmask"}]
+
+    #testnocomms = yaml.dump(yaml.safe_load(test))
     
     print("Comments:", comms,
           "Without comms:", testnocomms,
-          "Set comments back:", set_comments_back(testnocomms, list(map(json.loads, comms))),
-          sep='\n')
+          "Set comments back:", set_comments_back(testnocomms, comms), sep="\n")
+              #list(map(json.loads, comms))),

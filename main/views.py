@@ -56,7 +56,6 @@ def home(request, orgid):
         org_object.yamldata = set_comments_back(yaml_no_comments, [json.loads(substitutions),
                                                                    json.loads(formats)])
         org_object.save()
-        return HttpResponseRedirect(f"/{orgid}/files/")
     return render(request, 'home.html', {'org_object': org_object,
                                          'orgid': orgid,
                                          'json_from_yaml': json_from_yaml,

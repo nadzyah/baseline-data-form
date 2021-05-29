@@ -156,10 +156,10 @@ current)</span></a>
         // Your custom substituions overwrite our static
         substitutions = {{ substitutions|safe }};
         // Remove quotes from label's name if it is a number
-        for (label in substitutions) {
+        for (let label in substitutions) {
            if (!isNaN(label.substring(1, label.length-1))
-               && !isNaN(parseFloat(label.substring(1, label.length-1)))
-               && label[0] == "'" && label[label.length-1] == "'" ){
+               && !isNaN(parseFloat(label.substring(1, label.length-1)))){
+               //&& label[0] == "'" && label[label.length-1] == "'" ){
                 let newkey = label.substring(1, label.length-1); 
                 Object.defineProperty(substitutions, newkey, Object.getOwnPropertyDescriptor(substitutions, label));
                 delete substitutions[label];
@@ -236,11 +236,11 @@ current)</span></a>
         label_format = {{ formats|safe }};
        
         // Remove quotes from label's name if it is a number
-        for (label in label_format) {
+        for (let label in label_format) {
            if (!isNaN(label.substring(1, label.length-1))
-               && !isNaN(parseFloat(label.substring(1, label.length-1)))
-               && (label[0] == "'" || label[0] == '"')
-               && label[label.length-1] == "'" || label[label.length-1] == '"'){
+               && !isNaN(parseFloat(label.substring(1, label.length-1)))){
+               //&& (label[0] == "'" || label[0] == '"')
+               //&& label[label.length-1] == "'" || label[label.length-1] == '"'){
                  let newkey = label.substring(1, label.length-1); 
                  Object.defineProperty(label_format, newkey, Object.getOwnPropertyDescriptor(label_format, label));
                 delete label_format[label];
@@ -252,7 +252,7 @@ current)</span></a>
         // All IDs (path to field) and HTML objects (fields) that have that IDs
         id_fields = {};
 
-        for (label in all_label_format){
+        for (let label in all_label_format){
           // Array with HTML inputs that correspond with labels in all_label_format dict
           var watchfields = document.querySelectorAll('[id$="[' + label +']"]');
         for (var i = 0; i < watchfields.length; i++){

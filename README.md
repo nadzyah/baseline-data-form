@@ -116,6 +116,8 @@ global:
   ntp: 0.0.0.0
 ```
 
+Also if you want to use a number as label's name, put in in single or double quotes (cause json doesn't support numbers as a key).
+
 Once you've filled the registration form, click "Отправить" button and then you'll be redirected to the web page at `http://<server's_IP>:<port>/<uuid>/`. Your customer can use this link it to edit the form.
 
 ## Work with the main form
@@ -283,7 +285,7 @@ the errors for the fields with specified formats will be displayed the next way:
 
 ![static/images/formats.png](static/images/formats.png)
 
-**Do NOT use spaces** to separate substitution and format field like it's shown in the example bellow:
+**Do NOT use spaces to separate substitution and format** field like it's shown in the example bellow:
 ```yaml
 label: value   #[substitution] [format]
 ```
