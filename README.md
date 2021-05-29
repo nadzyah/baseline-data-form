@@ -116,7 +116,7 @@ global:
   ntp: 0.0.0.0
 ```
 
-Also if you want to use a number as label's name, put in in single or double quotes (cause json doesn't support numbers as a key).
+Also if you want to use a number as label's name, put it in single or double quotes (cause json doesn't support numbers as a key).
 
 Once you've filled the registration form, click "Отправить" button and then you'll be redirected to the web page at `http://<server's_IP>:<port>/<uuid>/`. Your customer can use this link it to edit the form.
 
