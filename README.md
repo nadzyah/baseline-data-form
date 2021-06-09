@@ -154,7 +154,11 @@ In addition, we apply the next substitutions (case sensitive), which are overwri
   <tbody>
   <tr>
     <td>ip</td>
-    <td>IP адрес</td>
+    <td>IPv4 адрес</td>
+  </tr>
+  <tr>
+    <td>ip6</td>
+    <td>IPv6 адрес</td>
   </tr>
   <tr>
      <td>gateway (gw)</td>
@@ -166,8 +170,13 @@ In addition, we apply the next substitutions (case sensitive), which are overwri
   </tr>
   <tr>
      <td>ip_mask</td>
-     <td>IP адрес/маска</td>
+     <td>IPv4 адрес/маска</td>
   </tr>
+  <tr>
+     <td>ip6_mask</td>
+     <td>IPv6 адрес/маска</td>
+  </tr>
+
   <tr>
      <td>network</td>
      <td>Подсеть</td>
@@ -215,9 +224,21 @@ So inputs with the next formats are checked:
   <tbody>
   <tr valign="top">
     <td>ipaddr</td>
+    <td>1:2:3:4:5:6:7:8<br>
+	fe80::7:8<br>
+	1::1<br>
+	  </td>
+	  <td>
+	    f112d::1 — invalid 1st octet<br>
+	    p::y — only digits are allowed<br>
+	    fe80::y — only digits are allowed<br>
+	  </td>
+  </tr>
+  <tr valign="top">
+    <td>ip5addr</td>
     <td>115.42.150.37<br>
-			192.168.0.1<br>
-			110.234.52.124<br>
+	192.168.0.1<br>
+	110.234.52.124<br>
 	  </td>
 	  <td>
 	    210.110 — must have 4 octets<br>
@@ -228,8 +249,8 @@ So inputs with the next formats are checked:
 	    4444.11.11.11 — octet number must be between [0-255]<br>
 	    33.3333.33.3 — octet number must be between [0-255]<br>
 	  </td>
-  </tr>
-  <tr valign="top">
+ </tr>
+ <tr valign="top">
     <td>vlanid</td>
     <td>1<br>100<br>4093<br></td>
     <td>
@@ -251,6 +272,18 @@ So inputs with the next formats are checked:
     </td>
   </tr>
   <tr valign="top">
+    <td>ip6mask</td>
+    <td>::/0<br>
+	fd:0:0:1::1/64<br>
+	  </td>
+	  <td>
+	    f1234d::1/64 — invalid IPv6 address octets<br>
+	    fd:0:0:1::1/133 — mask must be less or equal to 128<br>
+	    fd:0:0:1::1.64 — mask must be separated from IP address with a slash<br>
+    </td>
+  </tr>
+
+  <tr valign="top">
     <td>network</td>
     <td>
 	     0.0.0.0/0<br>
@@ -264,8 +297,6 @@ So inputs with the next formats are checked:
   </tr>
   </tbody>
 </table>
-
-Keep in mind that there's only IPv4 support.
 
 You should specify the format of the field in yaml comment. Do it the next way:
 ```yaml

@@ -79,252 +79,290 @@ current)</span></a>
   </div>
 
   <script type="text/javascript">
-      // json-editor vars
-      JSONEditor.defaults.theme = 'bootstrap4';
-      JSONEditor.defaults.iconlib = 'fontawesome5';
-      JSONEditor.defaults.options["show_errors"] = "always";
-      JSONEditor.defaults.options["compact"] = 0;
-      JSONEditor.defaults.options["required_by_default"] = 1;
-      JSONEditor.defaults.options["no_additional_properties"] = 0;
-      JSONEditor.defaults.options["disable_edit_json"] = 1;
-      JSONEditor.defaults.options["disable_collapse"] = 1;
-      JSONEditor.defaults.options["disable_properties"] = 1;
-      JSONEditor.defaults.options["disable_array_add"] = 1;
-      JSONEditor.defaults.options["disable_array_reorder"] = 1;
-      JSONEditor.defaults.options["disable_array_delete"] = 0;
-      JSONEditor.defaults.options["enable_array_copy"] = 1;
-      JSONEditor.defaults.options["array_controls_top"] = 0;
-      JSONEditor.defaults.options["disable_array_delete_all_rows"] = 1;
-      JSONEditor.defaults.options["disable_array_delete_last_row"] = 1;
-      JSONEditor.defaults.options["object_layout"] = "table";
-      JSONEditor.defaults.options["form_name_root"] = "Форма сбора исходных данных";
+    // json-editor vars
+    JSONEditor.defaults.theme = 'bootstrap4';
+    JSONEditor.defaults.iconlib = 'fontawesome5';
+    JSONEditor.defaults.options["show_errors"] = "always";
+    JSONEditor.defaults.options["compact"] = 0;
+    JSONEditor.defaults.options["required_by_default"] = 1;
+    JSONEditor.defaults.options["no_additional_properties"] = 0;
+    JSONEditor.defaults.options["disable_edit_json"] = 1;
+    JSONEditor.defaults.options["disable_collapse"] = 1;
+    JSONEditor.defaults.options["disable_properties"] = 1;
+    JSONEditor.defaults.options["disable_array_add"] = 1;
+    JSONEditor.defaults.options["disable_array_reorder"] = 1;
+    JSONEditor.defaults.options["disable_array_delete"] = 0;
+    JSONEditor.defaults.options["enable_array_copy"] = 1;
+    JSONEditor.defaults.options["array_controls_top"] = 0;
+    JSONEditor.defaults.options["disable_array_delete_all_rows"] = 1;
+    JSONEditor.defaults.options["disable_array_delete_last_row"] = 1;
+    JSONEditor.defaults.options["object_layout"] = "grid";
+    JSONEditor.defaults.options["form_name_root"] = "Форма сбора исходных данных";
+    
+    // This is the starting value for the editor
+    // We will use this to seed the initial editor 
+    // and to provide a "Restore to Default" button.
+    var starting_value = JSON.parse(JSON.stringify({{ json_from_yaml|safe }}).replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t"));
 
-      // This is the starting value for the editor
-      // We will use this to seed the initial editor 
-      // and to provide a "Restore to Default" button.
-      var starting_value = JSON.parse(JSON.stringify({{ json_from_yaml|safe }}).replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t"));
+    // Initialize the editor
+    var editor = new JSONEditor(document.getElementById('editor_holder'), {
+      // Enable fetching schemas via ajax
+      ajax: true,
+      // The schema for the editor
+      schema: {
+        schema: {},
+        format: "grid",
+      },
+      // Seed the form with a starting value
+      startval: starting_value
+    });
 
-      // Initialize the editor
-      var editor = new JSONEditor(document.getElementById('editor_holder'),{
-        // Enable fetching schemas via ajax
-        ajax: true,
-        // The schema for the editor
-        schema: {
-          schema: {},
-        //  format: "table",
-        },
-        // Seed the form with a starting value
-        startval: starting_value
-      });
+    //$("label").filter(function(){
+      //var elem = $(this).parent('div').attr('data-schemapath');
+        //if (typeof elem != 'string')
+          //return false;
+      //return (elem.split('.').length - 1) == 1
+    //}).after('<button class="btn btn-sm ml-2 btn-primary" data-toggle="collapse">▼</button>');
 
-      // Add headers to labels
-      // h3 to main labels
-      $("label").filter(function(){
-        var elem = $(this).parent('div').attr('data-schemapath');
-          if (typeof elem != 'string')
-            return false;
-        return (elem.split('.').length - 1) == 1
-      }).attr('class', 'h5');
 
-      // h5 to sub labels
-      $("label").filter(function(){
-        var elem = $(this).parent('div').attr('data-schemapath');
-          if (typeof elem != 'string')
-            return false;
-        return (elem.split('.').length - 1) == 2
-      }).css('font-weight', 'bold');
+    // h4 for main labels
+    $("label").filter(function(){
+      var elem = $(this).parent('div').attr('data-schemapath');
+        if (typeof elem != 'string')
+          return false;
+      return (elem.split('.').length - 1) == 1
+    }).attr({'class': 'h4 for-collapse', 
+             'style': "font-weight: bolder", 
+            });
 
-      
-      // Replacements
-      $(document).ready(function () {
-        static_substitutions = {
-          "ip": "IP адрес",
-          "gateway": "Шлюз",
-          "gw": "Шлюз",
-          "default gateway": "Шлюз по умолчанию",
-          "default gw": "Шлюз по умолчанию",
-          "ip_mask": "IP адрес/маска",
-          "network": "Подсеть",
-          "interfaces": "Интерфейсы",
-          "syslog": "Syslog сервер",
-          "aaa": "Сервер аутентификации",
-          "ntp": "NTP сервер",
-          "dns1": "Основной DNS сервер",
-          "dns2": "Резервный DNS сервер"
-        };
+    // h5 for sublabel
+    $("label").filter(function(){
+      var elem = $(this).parent('div').attr('data-schemapath');
+        if (typeof elem != 'string')
+          return false;
+      return (elem.split('.').length - 1) == 2
+    }).attr('class', 'h5');
 
-        // Your custom substituions overwrite our static
-        substitutions = {{ substitutions|safe }};
-        // Remove quotes from label's name if it is a number
-        for (let label in substitutions) {
-           if (!isNaN(label.substring(1, label.length-1))
-               && !isNaN(parseFloat(label.substring(1, label.length-1)))){
-               //&& label[0] == "'" && label[label.length-1] == "'" ){
-                let newkey = label.substring(1, label.length-1); 
-                Object.defineProperty(substitutions, newkey, Object.getOwnPropertyDescriptor(substitutions, label));
-                delete substitutions[label];
-           };
-        };
 
-        var allsubstitutions = Object.assign({}, static_substitutions, substitutions);
-        // Apply all substitutions 
-        for (key in allsubstitutions){
-          $("label").filter(function() {
-             return $(this).text() == key;
-          }).html(allsubstitutions[key].replaceAll('##', '<br>'));
-        };
+    // bold font for other labels
+    $("label").filter(function(){
+      var elem = $(this).parent('div').attr('data-schemapath');
+        if (typeof elem != 'string')
+          return false;
+      return (elem.split('.').length - 1) >= 3
+    }).css('font-weight', 'bold');
 
-        // Validation functions
-        function validIP(testval) {
-          let ipregex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-          return ipregex.test(testval);
-        }
+    
+   // $("label.for-collapse").parent('div').children('div').attr('class', 'collapse');
+    
+    // Replacements
+    $(document).ready(function () {
+      static_substitutions = {
+        "ip": "IPv4 адрес",
+        "ip6": "IPv6 адрес",
+        "gateway": "Шлюз",
+        "gw": "Шлюз",
+        "default gateway": "Шлюз по умолчанию",
+        "default gw": "Шлюз по умолчанию",
+        "ip_mask": "IPv4 адрес/маска",
+        "ip6_mask": "IPv6 адрес/маска",
+        "network": "Подсеть",
+        "interfaces": "Интерфейсы",
+        "syslog": "Syslog сервер",
+        "aaa": "Сервер аутентификации",
+        "ntp": "NTP сервер",
+        "dns1": "Основной DNS сервер",
+        "dns2": "Резервный DNS сервер"
+      };
 
-        function validVLAN_ID(testval) {
-          return testval > 0 && testval < 4094;
-        }
+      // Your custom substituions overwrite our static
+      substitutions = {{ substitutions|safe }};
+      // Remove quotes from label's name if it is a number
+      for (let label in substitutions) {
+         if (!isNaN(label.substring(1, label.length-1))
+             && !isNaN(parseFloat(label.substring(1, label.length-1)))){
+             //&& label[0] == "'" && label[label.length-1] == "'" ){
+              let newkey = label.substring(1, label.length-1); 
+              Object.defineProperty(substitutions, newkey, Object.getOwnPropertyDescriptor(substitutions, label));
+              delete substitutions[label];
+         };
+      };
 
-        function validIPMask(testval) {
-          let ipmaskregex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/((3[0-2])|([0-2]?[0-9]{1,1}))$/;
-          return ipmaskregex.test(testval);
-        }
-        
-        // Convert IP address to binary without dots between octets
-        function binaryIP(ipstr){
-          var fields = ipstr.split('.');
-      		var f1 = ("00000000" + parseInt(fields[0]).toString(2)).slice(-8);
-      		var f2 = ("00000000" + parseInt(fields[1]).toString(2)).slice(-8);
-      		var f3 = ("00000000" + parseInt(fields[2]).toString(2)).slice(-8);
-      		var f4 = ("00000000" + parseInt(fields[3]).toString(2)).slice(-8);
-      		return f1 + f2 + f3 + f4;
-        }
+      var allsubstitutions = Object.assign({}, static_substitutions, substitutions);
+      // Apply all substitutions 
+      for (key in allsubstitutions){
+        $("label").filter(function() {
+           return $(this).text() == key;
+        }).html(allsubstitutions[key].replaceAll('##', '<br>'));
+      };
 
-        function validNetwork(testval) {
-          // If it doesn't match even ipmask it's invalid
-          if (!validIPMask(testval))
-            return false;
-          // Get IP address and mask
-          let addr_mask = testval.split('/');
-          // Find number of last bits that must be 0
-          let diffmask = 32 - parseInt(addr_mask[1]);
-          // If mask equals 32 or testval is 0.0.0.0/0
-          if (diffmask == 0 || testval == '0.0.0.0/0')
-            return true;
-          // Check if last <diffmask> bits are 0
-          return binaryIP(addr_mask[0]).slice(-diffmask) == '0'.repeat(diffmask);
-        }    
-  
-        // Formats and functions that are associated with them
-        format_functions = {
-                            "ipaddr": validIP, 
-                            "vlanid": validVLAN_ID,
-                            "ipmask": validIPMask,
-                            "network": validNetwork
-                           };
-        // Predefined labels
-        var static_formats = {
-          "ip": "ipaddr",
-          "gateway": "ipaddr",
-          "gw": "ipaddr",
-          "default gateway": "ipaddr",
-          "default gw": "ipaddr",
-          "ip_mask": "ipmask",
-          "network": "network",
-          "vlanid": "vlanid"
-        }
+      // Validation functions
+      function validIP(testval) {
+        let ipregex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+        return ipregex.test(testval);
+      }
 
-        label_format = {{ formats|safe }};
-       
-        // Remove quotes from label's name if it is a number
-        for (let label in label_format) {
-           if (!isNaN(label.substring(1, label.length-1))
-               && !isNaN(parseFloat(label.substring(1, label.length-1)))){
-               //&& (label[0] == "'" || label[0] == '"')
-               //&& label[label.length-1] == "'" || label[label.length-1] == '"'){
-                 let newkey = label.substring(1, label.length-1); 
-                 Object.defineProperty(label_format, newkey, Object.getOwnPropertyDescriptor(label_format, label));
-                delete label_format[label];
-           };
-        };
+      function validIP6(testval) {
+        let ipregex = /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/;
+        return ipregex.test(testval);
+      }
 
-        var all_label_format = Object.assign({}, static_formats, label_format);
+      function validVLAN_ID(testval) {
+        return testval > 0 && testval < 4094;
+      }
 
-        // All IDs (path to field) and HTML objects (fields) that have that IDs
-        id_fields = {};
+      function validIPMask(testval) {
+        let ipmaskregex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/((3[0-2])|([0-2]?[0-9]{1,1}))$/;
+        return ipmaskregex.test(testval);
+      }
 
-        for (let label in all_label_format){
-          // Array with HTML inputs that correspond with labels in all_label_format dict
-          var watchfields = document.querySelectorAll('[id$="[' + label +']"]');
-        for (var i = 0; i < watchfields.length; i++){
-          // Replace brackets with dots to generate path from id
-          var fieldid = watchfields[i].id.replace(/[\[\]']+/g,'.').slice(0, -1);
-          // Pass HTML input object in dict
-          id_fields[fieldid] = watchfields[i];
-          };
-        };
-        
-        // Validation process
+      function validIP6Mask(testval) {
+        let ipregex = /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\/((12[0-8])|(1[0-1][0-9]{1})|([0-9]{1,2}))$/;
+        return ipregex.test(testval);
+      }
 
-        // Hook up the validation indicator to update its status whenever the editor changes
-        var indicator = document.getElementById('valid_indicator');
-        indicator.textContent = 'data is valid';
 
-        editor.on('change', function() {
-          var is_form_valid = true;
-          for (id in id_fields){
-            var field = id_fields[id];
-            // Get the label from the path
-            let label = /[^.]*$/.exec(id)[0];
-            // Get format that corresponds with the label
-            // Then get the function with corresponds to this format
-            if (! format_functions[all_label_format[label]](field.value)){
-              // Change border color to red
-              $(id_fields[id]).css('border-color', 'red');
-              is_form_valid = false;
-            }
-            else{
-              $(id_fields[id]).css('border-color', '');
-            };
-          };
-          if (is_form_valid){
-            indicator.className = 'badge badge-success';
-            indicator.textContent = 'data is valid';
-          }
-          else {
-            indicator.className = 'badge badge-danger';
-            indicator.textContent = 'data is invalid';
-          };
-        });
-        
-      });
+      // Convert IP address to binary without dots between octets
+      function binaryIP(ipstr){
+        var fields = ipstr.split('.');
+    		var f1 = ("00000000" + parseInt(fields[0]).toString(2)).slice(-8);
+    		var f2 = ("00000000" + parseInt(fields[1]).toString(2)).slice(-8);
+    		var f3 = ("00000000" + parseInt(fields[2]).toString(2)).slice(-8);
+    		var f4 = ("00000000" + parseInt(fields[3]).toString(2)).slice(-8);
+    		return f1 + f2 + f3 + f4;
+      }
+
+      function validNetwork(testval) {
+        // If it doesn't match even ipmask it's invalid
+        if (!validIPMask(testval))
+          return false;
+        // Get IP address and mask
+        let addr_mask = testval.split('/');
+        // Find number of last bits that must be 0
+        let diffmask = 32 - parseInt(addr_mask[1]);
+        // If mask equals 32 or testval is 0.0.0.0/0
+        if (diffmask == 0 || testval == '0.0.0.0/0')
+          return true;
+        // Check if last <diffmask> bits are 0
+        return binaryIP(addr_mask[0]).slice(-diffmask) == '0'.repeat(diffmask);
+      }    
+
+      // Formats and functions that are associated with them
+      format_functions = {
+                          "ipaddr": validIP, 
+                          "ip6addr": validIP6, 
+                          "vlanid": validVLAN_ID,
+                          "ipmask": validIPMask,
+                          "ip6mask": validIP6Mask,
+                          "network": validNetwork
+                         };
+      // Predefined labels
+      var static_formats = {
+        "ip": "ipaddr",
+        "ip6": "ip6addr",
+        "gateway": "ipaddr",
+        "gw": "ipaddr",
+        "default gateway": "ipaddr",
+        "default gw": "ipaddr",
+        "ip_mask": "ipmask",
+        "ip6_mask": "ip6mask",
+        "network": "network",
+        "vlanid": "vlanid"
+      }
+
+      label_format = {{ formats|safe }};
      
-      // Send the filled form
-      document.getElementById('submit').addEventListener('click',function() {
-        $.ajax({
-          url: "{% url 'main:home' orgid %}",
-          type: "POST",
-          dataType: "json",
-          xhrFields: { responseType: "document" },
-          data: {
-            url: "{% url 'main:home' orgid %}",
-            csrfmiddlewaretoken: '{{ csrf_token }}',
-            "after_edit": JSON.stringify(editor.getValue()),
-            "substitutions": JSON.stringify({{ substitutions|safe }}),
-            "formats": JSON.stringify({{ formats|safe }})
-          },
-          success : function(json) {
-            window.location = "{% url 'main:success' orgid %}"
-          },
-          error : function(xhr,errmsg,err) {
-            window.location = "{% url 'main:success' orgid %}"
+      // Remove quotes from label's name if it is a number
+      for (let label in label_format) {
+         if (!isNaN(label.substring(1, label.length-1))
+             && !isNaN(parseFloat(label.substring(1, label.length-1)))){
+             //&& (label[0] == "'" || label[0] == '"')
+             //&& label[label.length-1] == "'" || label[label.length-1] == '"'){
+               let newkey = label.substring(1, label.length-1); 
+               Object.defineProperty(label_format, newkey, Object.getOwnPropertyDescriptor(label_format, label));
+              delete label_format[label];
+         };
+      };
+
+      var all_label_format = Object.assign({}, static_formats, label_format);
+
+      // All IDs (path to field) and HTML objects (fields) that have that IDs
+      id_fields = {};
+
+      for (let label in all_label_format){
+        // Array with HTML inputs that correspond with labels in all_label_format dict
+        var watchfields = document.querySelectorAll('[id$="[' + label +']"]');
+      for (var i = 0; i < watchfields.length; i++){
+        // Replace brackets with dots to generate path from id
+        var fieldid = watchfields[i].id.replace(/[\[\]']+/g,'.').slice(0, -1);
+        // Pass HTML input object in dict
+        id_fields[fieldid] = watchfields[i];
+        };
+      };
+      
+      // Validation process
+
+      // Hook up the validation indicator to update its status whenever the editor changes
+      var indicator = document.getElementById('valid_indicator');
+      indicator.textContent = 'data is valid';
+
+      editor.on('change', function() {
+        var is_form_valid = true;
+        for (id in id_fields){
+          var field = id_fields[id];
+          // Get the label from the path
+          let label = /[^.]*$/.exec(id)[0];
+          // Get format that corresponds with the label
+          // Then get the function with corresponds to this format
+          if (! format_functions[all_label_format[label]](field.value)){
+            // Change border color to red
+            $(id_fields[id]).css({'border-color': 'red', 'background-color': '#fcd2cf'});
+            is_form_valid = false;
           }
-        })
+          else{
+            $(id_fields[id]).css({'border-color': '', 'background-color': 'white'});
+          };
+        };
+        if (is_form_valid){
+          indicator.className = 'badge badge-success';
+          indicator.textContent = 'data is valid';
+        }
+        else {
+          indicator.className = 'badge badge-danger';
+          indicator.textContent = 'data is invalid';
+        };
       });
 
-      // Hook up the Restore to Default button
-      document.getElementById('restore').addEventListener('click',function() {
-        editor.setValue(starting_value);
-      });
       
+    });
+   
+    // Send the filled form
+    document.getElementById('submit').addEventListener('click',function() {
+      $.ajax({
+        url: "{% url 'main:home' orgid %}",
+        type: "POST",
+        dataType: "json",
+        xhrFields: { responseType: "document" },
+        data: {
+          url: "{% url 'main:home' orgid %}",
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+          "after_edit": JSON.stringify(editor.getValue()),
+          "substitutions": JSON.stringify({{ substitutions|safe }}),
+          "formats": JSON.stringify({{ formats|safe }})
+        },
+        success : function(json) {
+          window.location = "{% url 'main:success' orgid %}"
+        },
+        error : function(xhr,errmsg,err) {
+          window.location = "{% url 'main:success' orgid %}"
+        }
+      })
+    });
+
+    // Hook up the Restore to Default button
+    document.getElementById('restore').addEventListener('click',function() {
+      editor.setValue(starting_value);
+    });
+    
     </script>
 {% endblock %}
