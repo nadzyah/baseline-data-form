@@ -198,6 +198,9 @@ current)</span></a>
 
       // Validation functions
       function validIP(testval) {
+        if (testval == "0.0.0.0") {
+          return false;
+        }
         let ipregex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
         return ipregex.test(testval);
       }
@@ -212,6 +215,9 @@ current)</span></a>
       }
 
       function validIPMask(testval) {
+        if (testval == "0.0.0.0/0") {
+           return false;
+        }
         let ipmaskregex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/((3[0-2])|([0-2]?[0-9]{1,1}))$/;
         return ipmaskregex.test(testval);
       }
@@ -241,8 +247,11 @@ current)</span></a>
         // Find number of last bits that must be 0
         let diffmask = 32 - parseInt(addr_mask[1]);
         // If mask equals 32 or testval is 0.0.0.0/0
-        if (diffmask == 0 || testval == '0.0.0.0/0')
+        if (diffmask == 0)
           return true;
+        if (testval == '0.0.0.0/0'){
+          return false;
+        }
         // Check if last <diffmask> bits are 0
         return binaryIP(addr_mask[0]).slice(-diffmask) == '0'.repeat(diffmask);
       }    
