@@ -235,7 +235,7 @@ So inputs with the next formats are checked:
 	  </td>
   </tr>
   <tr valign="top">
-    <td>ip5addr</td>
+    <td>ip6addr</td>
     <td>115.42.150.37<br>
 	192.168.0.1<br>
 	110.234.52.124<br>
@@ -338,6 +338,11 @@ Some labels have predefined formats, which are overwritten with your comment for
       <td>ipaddr</td>
     </tr>
     <tr>
+      <td>ip6</td>
+      <td>ip6addr</td>
+    </tr>
+
+    <tr>
        <td>gateway (gw)</td>
        <td>ipaddr</td>
     </tr>
@@ -348,6 +353,10 @@ Some labels have predefined formats, which are overwritten with your comment for
     <tr>
        <td>ip_mask</td>
        <td>ipmask</td>
+    </tr>
+    <tr>
+       <td>ip6_mask</td>
+       <td>ip6mask</td>
     </tr>
     <tr>
        <td>network</td>
