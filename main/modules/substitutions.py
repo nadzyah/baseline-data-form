@@ -99,6 +99,8 @@ def yaml_comments(yamldata):
                 # Add name if it's not empty
                 if name != '':
                     result[0][unique_label] = name
+                else:
+                    result[0][unique_label] = orig_label
                 if was_multiline:   # Clear flag
                     was_multiline = 0
                 name = ''   # Clear name
@@ -198,9 +200,11 @@ def set_comments_back(yamlstr, names_formats_orig):
 if __name__ == "__main__":
     testnocomms = """trusthost:
   - ip: 10.0.0.0/8    #[one][ipmask]
-  - ip: 172.16.0.0/12    #[one dot one][ipmask]
+  - ip: 172.16.0.0/12    #[one dot one][]
 something else:
   ip: another one
+
+ip: 1.1.1.1   #[][ipaddr]
 """
     result_after_yamlcomms = yaml_comments(testnocomms)
     for x in result_after_yamlcomms:

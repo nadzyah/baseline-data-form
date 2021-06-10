@@ -181,7 +181,6 @@ current)</span></a>
       for (let label in substitutions) {
          if (!isNaN(label.substring(1, label.length-1))
              && !isNaN(parseFloat(label.substring(1, label.length-1)))){
-             //&& label[0] == "'" && label[label.length-1] == "'" ){
               let newkey = label.substring(1, label.length-1); 
               Object.defineProperty(substitutions, newkey, Object.getOwnPropertyDescriptor(substitutions, label));
               delete substitutions[label];
@@ -191,6 +190,9 @@ current)</span></a>
       var allsubstitutions = Object.assign({}, static_substitutions, substitutions);
       // Apply all substitutions 
       for (key in allsubstitutions){
+        if (allsubstitutions[key] in static_substitutions) {
+          allsubstitutions[key] = static_substitutions[allsubstitutions[key]];
+        }
         $("label").filter(function() {
            return $(this).text() == key;
         }).html(allsubstitutions[key].replaceAll('##', '<br>'));
