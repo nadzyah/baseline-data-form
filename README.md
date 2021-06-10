@@ -24,6 +24,7 @@ Check out our demo: [https://data.solidex.by/580fb73e-e6be-4e66-a3d6-9fa22bcb26c
 - [Development](#development)
   * [Structural components](#structural-components)
   * [Logic](#logic)
+  * [Unique substitutions and validation](#unique-substitutions-and-validation)
 
 # Installation
 
@@ -33,7 +34,7 @@ Clone the repo, then install the requirements:
 pip3 install -r requirements.txt
 ```
 
-Keep in mind that here we're using PostgreSQL database instead of SQLite, so you need to install and configure it (you can use [this tutorial](https://www.digitalocean.com/community/tutorials/how-to-use-postgresql-with-your-django-application-on-ubuntu-14-04)). Once you've installed PostgreSQL, edit `NAME`, `USER` and `PASSWORD` fields in DATABASES variable in `settings.py` file.
+Here we're using PostgreSQL database instead of SQLite, so you need to install and configure it (you can use [this tutorial](https://www.digitalocean.com/community/tutorials/how-to-use-postgresql-with-your-django-application-on-ubuntu-14-04)). Once you've installed PostgreSQL, edit `NAME`, `USER` and `PASSWORD` fields in DATABASES variable in `settings.py` file.
 
 If you want to revert to SQLite, set the next value for DATABASES variable:
 
@@ -48,7 +49,7 @@ DATABASES = {
 
 Once you’ve configured one of the databases, create `media/` folder in the project root directory to store config files that customers will upload: `mkdir media`
 
-Also don't forget to set `Debug = True` in `settings.py` file.
+Also don't forget to set `Debug = True` in `settings.py` file in case you're not ready to use it in production.
 
 Then make migrations and run the server:
 
@@ -78,7 +79,7 @@ Device1:   #[Central router]
 Device2:   #[Branch router ##
            # That one which is not central]
   interfaces:
-  - ip_mask: 172.22.10.1/31
+  - ip_mask: 172.22.10.1/31   #[IP address and mask]
     next-hop: 172.22.10.0
   - ip_mask: 0.0.0.0/0
     next-hop: 0.0.0.0
@@ -89,7 +90,7 @@ global:
 ```
 
 - Number of configuration files that you want to get from your customer (default is 0). We strongly recommend to provide the customer with a comment, which describes what configuration files you want to get.
-- (optional) Set of commands for each device that you want the customer to execute in CLI of the devices and provide you with the output. Use yaml syntax the next way:
+- (optional) Set of commands for each device that you want the customer to execute in CLI of devices and provide you with the output. Use yaml syntax the next way:
 
 ```yaml
 Device1:
@@ -116,7 +117,7 @@ global:
   ntp: 0.0.0.0
 ```
 
-Also if you want to use a number as label's name, put it in single or double quotes (cause json doesn't support numbers as a key).
+Note: If you want to use a number as label's name, put it in single or double quotes (the editor doesn't support numbers as a key).
 
 Once you've filled the registration form, click "Отправить" button and then you'll be redirected to the web page at `http://<server's_IP>:<port>/<uuid>/`. Your customer can use this link it to edit the form.
 
@@ -125,22 +126,28 @@ Once you've filled the registration form, click "Отправить" button and 
 The information about baseline data that you've provided while registering an organization is transformed into a web-form. To get more information about the transformation process see [Development → Logic](#logic) section.
 
 ### Change visibility of labels' names
-As you can see, visibility of some labels in your yaml-data is changed when they are displayed on the web-page. For example, the next yaml-data:
+Visibility of some labels in your yaml-data may be changed when they are displayed on the web-page. For example, the next yaml-data:
 
 ```yaml
+Device1:
+  - ip: 0.0.0.0 #[IP адрес маршрутизатора справа]
+  - ip: 0.0.0.0 #[IP адрес маршрутизатора слева]
+Device2:
+  ip: 0.0.0.0
 global:
   syslog: 0.0.0.0  #[IP адрес Syslog-сервера]
-  ntp: 0.0.0.0  #[IP адрес NTP-сервера]
-  dns1: 0.0.0.0  #[IP адрес основного DNS-сервера]
+  dns1: 0.0.0.0
 ```
 
 will be displayed this way:
 
 ![static/images/subst_example.png](static/images/subst_example.png)
 
-So if you want to change label's visibility, provide its name in a comment using square brackets. **Do NOT use spaces** to separate `#` and `[` symbols.
+So if you want to change label's visibility, provide its name in a comment using square brackets. 
 
-In addition, we apply the next substitutions (case sensitive), which are overwritten by yours in case you provide label's name (the alternative variants are set in round brackets):
+**Do NOT use spaces** to separate `#` and `[` symbols.
+
+In addition, we apply the next substitutions (case sensitive) for the label's names in the first column in case you don't provide any substitution for a particular label. The alternative variants are set in round brackets:
 
 <table>
   <thead>
@@ -174,7 +181,6 @@ In addition, we apply the next substitutions (case sensitive), which are overwri
      <td>ip6_mask</td>
      <td>IPv6 адрес/маска</td>
   </tr>
-
   <tr>
      <td>network</td>
      <td>Подсеть</td>
@@ -192,8 +198,12 @@ In addition, we apply the next substitutions (case sensitive), which are overwri
      <td>Сервер аутентификации</td>
   </tr>
   <tr>
-     <td>ntp</td>
-     <td>NTP-сервер</td>
+     <td>ntp1</td>
+     <td>Основной NTP-сервер</td>
+  </tr>
+    <tr>
+     <td>ntp2</td>
+     <td>Резервный NTP-сервер</td>
   </tr>
   <tr>
      <td>dns1</td>
@@ -206,7 +216,9 @@ In addition, we apply the next substitutions (case sensitive), which are overwri
   </tbody>
 </table>
 
+
 ### Validation of the input
+
 For some inputs we check if a customer provides the data correctly. If the data isn't correct, the input's border and the badge at the end of the form turn red. Nevertheless, a customer will be able to send invalid data.
 
 So inputs with the next formats are checked:
@@ -228,8 +240,8 @@ So inputs with the next formats are checked:
 	  </td>
 	  <td>
 	    f112d::1 — invalid 1st octet<br>
-	    p::y — only digits are allowed<br>
-	    fe80::y — only digits are allowed<br>
+	    tt::y — only hex numbers are allowed<br>
+	    fe80::y — only hex numbers are allowed<br>
 	  </td>
   </tr>
   <tr valign="top">
@@ -248,18 +260,18 @@ So inputs with the next formats are checked:
 	    33.3333.33.3 — octet number must be between [0-255]<br>
 	  </td>
  </tr>
- <tr valign="top">
+ <tr valign="top">Associate the unique label's name from 2nd step with the original one
     <td>vlanid</td>
     <td>1<br>100<br>4093<br></td>
     <td>
 		-10 — must be greater than 0<br>
 		6575 — must be less than 4094<br>
-	    6y75 — must be a number<br>
+	    y880 — must be a number<br>
 	 </td>
   </tr>
   <tr valign="top">
     <td>ipmask</td>
-    <td>0.0.0.0/0<br>
+    <td>10.0.0.0/0<br>
 			192.168.0.1/24<br>
 			110.234.52.124/32<br>
 	  </td>
@@ -284,7 +296,7 @@ So inputs with the next formats are checked:
   <tr valign="top">
     <td>network</td>
     <td>
-	     0.0.0.0/0<br>
+	     10.0.0.0/0<br>
 	    192.168.8.0/24<br>
 	    92.16.8.0/32
     </td>
@@ -316,6 +328,7 @@ the errors for the fields with specified formats will be displayed the next way:
 
 **Do NOT use spaces to separate substitution and format** field like it's shown in the example bellow:
 ```yaml
+!!!INCORRECT
 label: value   #[substitution] [format]
 ```
 
@@ -337,7 +350,6 @@ Some labels have predefined formats, which are overwritten with your comment for
       <td>ip6</td>
       <td>ip6addr</td>
     </tr>
-
     <tr>
        <td>gateway (gw)</td>
        <td>ipaddr</td>
@@ -365,7 +377,13 @@ Some labels have predefined formats, which are overwritten with your comment for
   </tbody>
 </table>
 
+If you don't want to validate user's input for specific labels, keep the brackets empty:
+```yaml
+ip: 1.1.X.1   #[Special IP address][]
+```
+
 ### Multi-line comments
+
 If you want to write your label name in multiple lines, use `##` symbol as line break. See the example bellow:
 ```yaml
  label: value  #[Lorem ipsum dolor ##
@@ -376,9 +394,10 @@ Line breaks will be displayed with label's name.
 
 **Do NOT break format field,** even the way that is shown in the next examples:
 ```yaml
+!!!INCORRECT
 label1: value1   #[substitution]##
                  #[format]
-	             
+!!!INCORRECT	             
 label2: value2   #[substitution][for##
                  #mat]
 ```
@@ -386,7 +405,7 @@ label2: value2   #[substitution][for##
 
 As it was mentioned above, all the files are stored in `/media` folder. Files from each organization are stored in isolated sub-folder with organization's uuid as the sub-folder's name.
 
-Keep in mind, when a customer delete a file, it is also deleted from the server. But when you delete an organization from the database, files that are associated with it are deleted only from the database. They continue to be stored on the server and you should remove them manually.
+When user delete a file, it is also deleted from the server. But in case you delete an organization from the database, all the files that are associated with it are deleted only from the database and continue to be stored on the server, thus you should remove them manually.
 
 ## Access the filled data
 
@@ -411,9 +430,7 @@ The commands output is stored in json format, here's an example:
 
 ## Feedback
 
-A customer can provide you with a feedback (as many times as they want).
-
-
+A customer can provide you with a feedback which is editable.
 
 # Development
 
@@ -438,5 +455,18 @@ The conversion of yaml-data to web form is implemented the next way: yaml-data �
 Also this json-editor is used to generate "commands" page. Once you've provided set of commands (in yaml format) for each device that you want the customer to execute in CLI, it is transformed in web-form with text-areas as it's defined in `modules/commands_to_schema.py` file.
 
 Validation process is defined in `home.html` file (with JavaScript code).
+
+
+### Unique substitutions and validation
+
+One-to-one relationship between specific label's name and the substitution for it (label and format for its input) is established with the next steps:
+
+1. Get the original label's name.
+2. Write the the end of the name a random integer.
+3. Rewrite this specific label in yaml-data with the randomized one (from 2nd step).
+4. Associate the unique label's name from 2nd step with the original one
+5. Associate substitution and format from the comment with the obtained from 2nd step label's name.
+
+---
 
 To get more information read the code, it's well documented.

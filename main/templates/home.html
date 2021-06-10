@@ -125,33 +125,36 @@ current)</span></a>
     //}).after('<button class="btn btn-sm ml-2 btn-primary" data-toggle="collapse">▼</button>');
 
 
-    // h4 for main labels
-    $("label").filter(function(){
-      var elem = $(this).parent('div').attr('data-schemapath');
-        if (typeof elem != 'string')
-          return false;
-      return (elem.split('.').length - 1) == 1
-    }).attr({'class': 'h4 for-collapse', 
-             'style': "font-weight: bolder", 
-            });
+    function applyHeaders() {
+      // h4 for main labels
+      $("label").filter(function(){
+        var elem = $(this).parent('div').attr('data-schemapath');
+          if (typeof elem != 'string')
+            return false;
+        return (elem.split('.').length - 1) == 1
+      }).attr({'class': 'h4 for-collapse', 
+               'style': "font-weight: bolder", 
+              });
+  
+      // h5 for sublabel
+      $("label").filter(function(){
+        var elem = $(this).parent('div').attr('data-schemapath');
+          if (typeof elem != 'string')
+            return false;
+        return (elem.split('.').length - 1) == 2
+      }).attr('class', 'h5');
+  
+  
+      // bold font for other labels
+      $("label").filter(function(){
+        var elem = $(this).parent('div').attr('data-schemapath');
+          if (typeof elem != 'string')
+            return false;
+        return (elem.split('.').length - 1) >= 3
+      }).css('font-weight', 'bold');
+    };
 
-    // h5 for sublabel
-    $("label").filter(function(){
-      var elem = $(this).parent('div').attr('data-schemapath');
-        if (typeof elem != 'string')
-          return false;
-      return (elem.split('.').length - 1) == 2
-    }).attr('class', 'h5');
-
-
-    // bold font for other labels
-    $("label").filter(function(){
-      var elem = $(this).parent('div').attr('data-schemapath');
-        if (typeof elem != 'string')
-          return false;
-      return (elem.split('.').length - 1) >= 3
-    }).css('font-weight', 'bold');
-
+   applyHeaders();
     
    // $("label.for-collapse").parent('div').children('div').attr('class', 'collapse');
     
@@ -170,7 +173,8 @@ current)</span></a>
         "interfaces": "Интерфейсы",
         "syslog": "Syslog сервер",
         "aaa": "Сервер аутентификации",
-        "ntp": "NTP сервер",
+        "ntp1": "Основной NTP сервер",
+        "ntp2": "Резервный NTP сервер",
         "dns1": "Основной DNS сервер",
         "dns2": "Резервный DNS сервер"
       };
@@ -188,15 +192,19 @@ current)</span></a>
       };
 
       var allsubstitutions = Object.assign({}, static_substitutions, substitutions);
-      // Apply all substitutions 
-      for (key in allsubstitutions){
-        if (allsubstitutions[key] in static_substitutions) {
-          allsubstitutions[key] = static_substitutions[allsubstitutions[key]];
-        }
-        $("label").filter(function() {
-           return $(this).text() == key;
-        }).html(allsubstitutions[key].replaceAll('##', '<br>'));
+      function applySubstitutions() {
+        // Apply all substitutions
+        for (key in allsubstitutions){
+          if (allsubstitutions[key] in static_substitutions) {
+            allsubstitutions[key] = static_substitutions[allsubstitutions[key]];
+          }
+          $("label").filter(function() {
+             return $(this).text() == key;
+          }).html(allsubstitutions[key].replaceAll('##', '<br>'));
+        };
       };
+
+      applySubstitutions();
 
       // Validation functions
       function validIP(testval) {
@@ -300,16 +308,20 @@ current)</span></a>
       // All IDs (path to field) and HTML objects (fields) that have that IDs
       id_fields = {};
 
-      for (let label in all_label_format){
-        // Array with HTML inputs that correspond with labels in all_label_format dict
-        var watchfields = document.querySelectorAll('[id$="[' + label +']"]');
-      for (var i = 0; i < watchfields.length; i++){
-        // Replace brackets with dots to generate path from id
-        var fieldid = watchfields[i].id.replace(/[\[\]']+/g,'.').slice(0, -1);
-        // Pass HTML input object in dict
-        id_fields[fieldid] = watchfields[i];
+      function applyFormats() {
+        for (let label in all_label_format){
+          // Array with HTML inputs that correspond with labels in all_label_format dict
+          var watchfields = document.querySelectorAll('[id$="[' + label +']"]');
+        for (var i = 0; i < watchfields.length; i++){
+          // Replace brackets with dots to generate path from id
+          var fieldid = watchfields[i].id.replace(/[\[\]']+/g,'.').slice(0, -1);
+          // Pass HTML input object in dict
+          id_fields[fieldid] = watchfields[i];
+          };
         };
       };
+
+      applyFormats();
       
       // Validation process
 
@@ -335,6 +347,9 @@ current)</span></a>
             $(id_fields[id]).css({'border-color': '', 'background-color': 'white'});
           };
         };
+        applySubstitutions();
+        applyFormats();
+        applyHeaders();
         if (is_form_valid) {
           indicator.className = 'badge badge-success';
           indicator.textContent = 'data is valid';
