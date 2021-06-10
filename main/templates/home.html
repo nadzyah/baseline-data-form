@@ -293,7 +293,7 @@ current)</span></a>
          };
       };
 
-      var all_label_format = Object.assign({}, static_formats, label_format);
+      all_label_format = Object.assign({}, static_formats, label_format);
 
       // All IDs (path to field) and HTML objects (fields) that have that IDs
       id_fields = {};
@@ -323,7 +323,8 @@ current)</span></a>
           let label = /[^.]*$/.exec(id)[0];
           // Get format that corresponds with the label
           // Then get the function with corresponds to this format
-          if (! format_functions[all_label_format[label]](field.value)){
+          if (format_functions[all_label_format[label]] !== undefined 
+              && !format_functions[all_label_format[label]](field.value)){
             // Change border color to red
             $(id_fields[id]).css({'border-color': 'red', 'background-color': '#fcd2cf'});
             is_form_valid = false;
@@ -332,7 +333,7 @@ current)</span></a>
             $(id_fields[id]).css({'border-color': '', 'background-color': 'white'});
           };
         };
-        if (is_form_valid){
+        if (is_form_valid) {
           indicator.className = 'badge badge-success';
           indicator.textContent = 'data is valid';
         }
