@@ -140,8 +140,6 @@ will be displayed this way:
 
 So if you want to change label's visibility, provide its name in a comment using square brackets. **Do NOT use spaces** to separate `#` and `[` symbols.
 
-Keep in mind that if the original names of some labels are equal, the substitution will be applied to all of them.
-
 In addition, we apply the next substitutions (case sensitive), which are overwritten by yours in case you provide label's name (the alternative variants are set in round brackets):
 
 <table>
@@ -320,8 +318,6 @@ the errors for the fields with specified formats will be displayed the next way:
 ```yaml
 label: value   #[substitution] [format]
 ```
-
-Keep in mind that if the names of some labels are equal, the validation of the inputs that correspond with these labels will be applied to all of them the same way.
 
 Some labels have predefined formats, which are overwritten with your comment for these labels (in case you specify the format). There're all of them:
 
