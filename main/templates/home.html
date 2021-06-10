@@ -358,7 +358,8 @@ current)</span></a>
           csrfmiddlewaretoken: '{{ csrf_token }}',
           "after_edit": JSON.stringify(editor.getValue()),
           "substitutions": JSON.stringify({{ substitutions|safe }}),
-          "formats": JSON.stringify({{ formats|safe }})
+          "formats": JSON.stringify({{ formats|safe }}),
+          "unique_orig": JSON.stringify({{ unique_orig|safe }})
         },
         success : function(json) {
           window.location = "{% url 'main:success' orgid %}"

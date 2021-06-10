@@ -39,28 +39,33 @@ def home(request, orgid):
         orgid: unique id of the organization
     """
     org_object = get_object_or_404(OrganizationModel, pk=orgid)
-    replaced_yaml = org_object.yamldata    # Get yaml-data to generate web-form
-    yform = yaml.safe_load(replaced_yaml)  # Convert yaml-data to python object
-    # Convert python object to string in json format
-    json_from_yaml = json.dumps(yform, sort_keys=False)
     # Get comments in yamldata string to display them instead of
     # some labels in web-form
-    names_formats = yaml_comments(org_object.yamldata)
-    substitutions =  names_formats[0]
-    formats = names_formats[1]
+    names_formats_orig = yaml_comments(org_object.yamldata)
+    substitutions, formats, unique_orig = (names_formats_orig[0],
+                                           names_formats_orig[1],
+                                           names_formats_orig[2])
+    unique_yamldata = names_formats_orig[3]
+    yform = yaml.safe_load(unique_yamldata)  # Convert yaml-data to python object
+    # Convert python object to string in json format
+    json_from_yaml = json.dumps(yform, sort_keys=False)
+
     if request.method == "POST":
         after_edit = request.POST.get("after_edit")
         substitutions = request.POST.get("substitutions")
         formats = request.POST.get("formats")
+        unique_orig = request.POST.get("unique_orig")
         yaml_no_comments = yaml.safe_dump(json.loads(after_edit), sort_keys=False)
         org_object.yamldata = set_comments_back(yaml_no_comments, [json.loads(substitutions),
-                                                                   json.loads(formats)])
+                                                                   json.loads(formats),
+                                                                   json.loads(unique_orig)])
         org_object.save()
     return render(request, 'home.html', {'org_object': org_object,
                                          'orgid': orgid,
                                          'json_from_yaml': json_from_yaml,
                                          'substitutions': substitutions,
                                          'formats': formats,
+                                         'unique_orig': unique_orig,
                                          })
 
 def success(request, orgid):
