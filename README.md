@@ -261,7 +261,7 @@ So inputs with the next formats are checked:
 	    33.3333.33.3 — octet number must be between [0-255]<br>
 	  </td>
  </tr>
- <tr valign="top">Associate the unique label's name from 2nd step with the original one
+ <tr valign="top">
     <td>vlanid</td>
     <td>1<br>100<br>4093<br></td>
     <td>
