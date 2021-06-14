@@ -66,7 +66,7 @@ Now you can connect to your server via HTTP: `http://<server's_IP>:<port>/`
 
 ## Add new organization
 
-Go to the `http://<server's_IP>:<port>/register/` and create a new web form for your customer's organization. Each organization is stored with its UUID that is used in all URLs that are associated with the organization. That's why a customer won't be able to access web-pages of another one (as long as they don't know the exact UUID of another organization).
+Go to the `http://<server's_IP>:<port>/register/` and create a new web form for your customer's organization. Each organization is stored with its UUID. This UUID is used in all URLs that are associated with the organization. That's why a customer won't be able to access web-pages of another one (as long as they don't know the exact UUID of another organization).
 
 To register an organization you need:
 
@@ -104,6 +104,7 @@ Device2:
 **Do NOT leave unknown fields in yaml-data with empty value (or null value)** like in the example bellow, cause the parser won't be able to detect the type of the field correctly (actually it would be defined as null and a customer won't be able to put information here):
 
 ```yaml
+!!!INCORRECT
 global:
   syslog: 
   ntp: null 
@@ -117,7 +118,7 @@ global:
   ntp: 0.0.0.0
 ```
 
-Note: If you want to use a number as label's name, put it in single or double quotes (the editor doesn't support numbers as a key).
+Note: If you want to use a number as label's name, put it in single or double quotes (the editor doesn't support number as a key).
 
 Once you've filled the registration form, click "Отправить" button and then you'll be redirected to the web page at `http://<server's_IP>:<port>/<uuid>/`. Your customer can use this link it to edit the form.
 
