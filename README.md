@@ -22,7 +22,7 @@ Check out our demo: [https://data.solidex.by/580fb73e-e6be-4e66-a3d6-9fa22bcb26c
   * [Access the filled data](#access-the-filled-data)
   * [Feedback](#feedback)
 - [Development](#development)
-  * [Structural components](#structural-components)
+  * [Building blocks](#building-blocks)
   * [Logic](#logic)
   * [Unique substitutions and validation](#unique-substitutions-and-validation)
 
