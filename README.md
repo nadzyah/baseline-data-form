@@ -439,7 +439,7 @@ A customer can provide you with a feedback which is editable.
 
 **Models and forms**
 
-The major components of the project is OrganizationModel, which is defined in `models.py` (all main files are stored in `main/` folder). It is used to create and store information about organizations in database.
+The main component of the project is OrganizationModel, which is defined in `models.py` (all main files are stored in `main/` folder). It is used to create and store information about organizations in database.
 
 The DocumentModel is associated with OrganizationModel and is used to store information about the files that the customer uploads. See `models.py` file to get more information.
 
@@ -467,7 +467,3 @@ One-to-one relationship between specific label's name and the substitution for i
 3. Rewrite this specific label in yaml-data with the randomized one (from 2nd step).
 4. Associate the unique label's name from 2nd step with the original one
 5. Associate substitution and format from the comment with the obtained from 2nd step label's name.
-
----
-
-To get more information read the code, it's well documented.
