@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 import os
+from socket import gethostbyname, getfqdn
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
@@ -25,6 +26,7 @@ SECRET_KEY = 'dz!+%*p3j^u!_+^_(^ojsy#(d$!584#)9q!4noxj%8yjahf6g9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
+#DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -134,3 +136,10 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = getfqdn("mail.solidex.by")
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "webform@solidex.by"
+EMAIL_HOST_PASSWORD = ""

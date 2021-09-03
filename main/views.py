@@ -4,8 +4,12 @@ from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.views.generic.edit import FormView
 from django.conf import settings
+from django.core.mail import send_mail
+
 import yaml, json
 import os
+from datetime import datetime
+
 from .modules.commands_to_schema import *
 from .modules.substitutions import *
 
@@ -30,6 +34,24 @@ def register(request):
             # Redirect to the main form page
             return HttpResponseRedirect(f"/{post.id}")
     return render(request, 'register.html', {'form': form})
+
+def send_email(uuid, orgname, addresses):
+    """
+    Send email to specified addresses
+    
+    uuid: string with organization ID
+    addresses: list of email addresses
+    """
+    date_time_now = str(datetime.now())[:-7]
+    body = f"The webform https://data.solidex.by/{uuid}/ was \
+updated at {date_time_now}."
+    send_mail(
+        f"{orgname} webform was updated",
+        body,
+        "webform@solidex.by",
+        addresses,
+        fail_silently=False
+    )
 
 def home(request, orgid):
     """
@@ -60,6 +82,8 @@ def home(request, orgid):
                                                                    json.loads(formats),
                                                                    json.loads(unique_orig)])
         org_object.save()
+        addresses = org_object.email_addresses.split(", ")
+        send_email(orgid, org_object.company, addresses)
     return render(request, 'home.html', {'org_object': org_object,
                                          'orgid': orgid,
                                          'json_from_yaml': json_from_yaml,

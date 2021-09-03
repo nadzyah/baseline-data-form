@@ -6,7 +6,7 @@ import uuid
 class OrganizationModel(models.Model):
     """
     A class used to represent an Organization
-   
+
     Attributes
     ----------
     company: CharField
@@ -18,11 +18,13 @@ class OrganizationModel(models.Model):
     num_conf: IntegerField
         number of configuration files
     comment_conf: CharField
-        comment that the customer will be able to use to understand 
+        comment that the customer will be able to use to understand
         what files they should to upload
     commands: TextField
         set of commands for each device (you provide it in yaml format,
         then it's converted and stored in json format)
+    email_addresses: CharField
+        the string with emails of workers that are focused on the project
     created_at: DateTimeField
         represents date and time when the object was created
     last_updated_at: DateTimeField
@@ -42,6 +44,7 @@ class OrganizationModel(models.Model):
                                     max_length=500,
                                     blank=True)
     commands = models.TextField(blank=True)
+    email_addresses = models.CharField(help_text="emails of project workers", max_length=200)
     created_at = models.DateTimeField(auto_now_add=True)
     last_updated_at = models.DateTimeField(auto_now=True)
 

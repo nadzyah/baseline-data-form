@@ -90,6 +90,7 @@ global:
 ```
 
 - Number of configuration files that you want to get from your customer (default is 0). We strongly recommend to provide the customer with a comment, which describes what configuration files you want to get.
+- Email addresses of people who want to receive messages every time a customer updates the form.
 - (optional) Set of commands for each device that you want the customer to execute in CLI of devices and provide you with the output. Use yaml syntax the next way:
 
 ```yaml
@@ -467,3 +468,4 @@ One-to-one relationship between specific label's name and the substitution for i
 3. Rewrite this specific label in yaml-data with the randomized one (from 2nd step).
 4. Associate the unique label's name from 2nd step with the original one
 5. Associate substitution and format from the comment with the obtained from 2nd step label's name.
+

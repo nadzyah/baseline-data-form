@@ -15,6 +15,8 @@
        <div class="col-my-4 mb-4"> {{ form.company }}</div>
        <h6 class="form-text mb-2">Содержимое YAML файла:</h6>
        <div class="form-textarea mb-4"> {{ form.yamldata }}</div>
+       <h6 class="form-text mb-2">Почтовые адреса работников</h6>
+       <div class="col-my-4 mb-4"> {{ form.email_addresses }} </div>
        <div class="form-group row">
 	       <div class="col-sm-6">
        	   <h6 class="form-text mb-2">Количество запрашиваемых конфигурационных файлов (default = 0, max = 10):</h6>
@@ -31,5 +33,4 @@
             Отправить
        </button>
     </form>
-  
- {% endblock %}
+{% endblock %}
