@@ -33,12 +33,12 @@ current)</span></a>
      top: 0;
      bottom: 0;
    }
-  
+
    label.h5 {
      margin-top: 5px;
      font-weight: bold;
    }
-  
+
    .required::after {
       /* content: " *";
       color: red;
@@ -81,7 +81,7 @@ current)</span></a>
      0% { -webkit-transform: rotate(0deg); }
      100% { -webkit-transform: rotate(360deg); }
    }
-   
+
    @keyframes spin {
      0% { transform: rotate(0deg); }
      100% { transform: rotate(360deg); }
@@ -124,9 +124,9 @@ current)</span></a>
     JSONEditor.defaults.options["disable_array_delete_last_row"] = 1;
     JSONEditor.defaults.options["object_layout"] = "grid";
     JSONEditor.defaults.options["form_name_root"] = "Форма сбора исходных данных";
-    
+
     // This is the starting value for the editor
-    // We will use this to seed the initial editor 
+    // We will use this to seed the initial editor
     // and to provide a "Restore to Default" button.
     var starting_value = JSON.parse(JSON.stringify({{ json_from_yaml|safe }}).replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t"));
 
@@ -161,7 +161,7 @@ current)</span></a>
       }).attr({'class': 'h4 for-collapse', 
                'style': "font-weight: bolder", 
               });
-  
+
       // h5 for sublabel
       $("label").filter(function(){
         var elem = $(this).parent('div').attr('data-schemapath');
@@ -169,8 +169,8 @@ current)</span></a>
             return false;
         return (elem.split('.').length - 1) == 2
       }).attr('class', 'h5');
-  
-  
+
+
       // bold font for other labels
       $("label").filter(function(){
         var elem = $(this).parent('div').attr('data-schemapath');
@@ -181,9 +181,9 @@ current)</span></a>
     };
 
    applyHeaders();
-    
+
    // $("label.for-collapse").parent('div').children('div').attr('class', 'collapse');
-    
+
     // Replacements
     $(document).ready(function () {
       static_substitutions = {
