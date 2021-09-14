@@ -290,12 +290,12 @@ current)</span></a>
         }
         // Check if last <diffmask> bits are 0
         return binaryIP(addr_mask[0]).slice(-diffmask) == '0'.repeat(diffmask);
-      }    
+      }
 
       // Formats and functions that are associated with them
       format_functions = {
-                          "ipaddr": validIP, 
-                          "ip6addr": validIP6, 
+                          "ipaddr": validIP,
+                          "ip6addr": validIP6,
                           "vlanid": validVLAN_ID,
                           "ipmask": validIPMask,
                           "ip6mask": validIP6Mask,
@@ -316,7 +316,7 @@ current)</span></a>
       }
 
       label_format = {{ formats|safe }};
-     
+
       // Remove quotes from label's name if it is a number
       for (let label in label_format) {
          if (!isNaN(label.substring(1, label.length-1))
@@ -348,14 +348,14 @@ current)</span></a>
       };
 
       applyFormats();
-      
-      // Validation process
 
+      // Validation process
       // Hook up the validation indicator to update its status whenever the editor changes
+
       var indicator = document.getElementById('valid_indicator');
       indicator.textContent = 'data is valid';
 
-      editor.on('change', function() {
+      function validate() {
         var is_form_valid = true;
         for (id in id_fields){
           var field = id_fields[id];
@@ -384,11 +384,16 @@ current)</span></a>
           indicator.className = 'badge badge-danger';
           indicator.textContent = 'data is invalid';
         };
+      };
+
+      validate();
+
+      editor.on('change', function() {
+        validate();
       });
 
-      
     });
-   
+
     // Send the filled form
     document.getElementById('submit').addEventListener('click', function() {
       document.getElementById("webform").style.display = "none";
