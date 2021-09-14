@@ -464,7 +464,7 @@ Validation process is defined in `home.html` file (with JavaScript code).
 One-to-one relationship between specific label's name and the substitution for it (label and format for its input) is established with the next steps:
 
 1. Get the original label's name.
-2. Write the the end of the name a random integer.
+2. Write to the end of the name a random integer.
 3. Rewrite this specific label in yaml-data with the randomized one (from 2nd step).
 4. Associate the unique label's name from 2nd step with the original one
 5. Associate substitution and format from the comment with the obtained from 2nd step label's name.
