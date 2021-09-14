@@ -388,9 +388,9 @@ ip: 1.1.X.1   #[Special IP address][]
 
 If you want to write your label name in multiple lines, use `##` symbol as line break. See the example bellow:
 ```yaml
- label: value  #[Lorem ipsum dolor ##
-               #sit amet consectetur##
-               # adipiscing][format]
+ label: value  #[This is a very ##
+               #long, really long##
+               # substitution][format]
 ```
 Line breaks will be displayed with label's name.
 
