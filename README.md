@@ -23,6 +23,7 @@ Check out our demo: [https://data.solidex.by/580fb73e-e6be-4e66-a3d6-9fa22bcb26c
   * [Feedback](#feedback)
 - [Development](#development)
   * [Building blocks](#building-blocks)
+  * [Edit substitutions and input validation](#edit-substitutions-and-input-validation)
   * [Logic](#logic)
   * [Unique substitutions and validation](#unique-substitutions-and-validation)
 
@@ -450,6 +451,33 @@ The OrganizationForm and DocumentForm correspond to the models and are used to c
 
 All the URLs are defined in `urls.py` file. Each URL corresponds to the web output—the view. A view defines logic of the responses according to HTTP-requests. See `views.py` file to get more information. Also keep in mind that all the HTML files are stored in `main/tempales/` directory.
 
+## Edit substitutions and input validation
+
+If you want to define more values for default substitutions, you should edit `home.html` file. They are defined in `static_substituions` variable:
+
+```javascript
+static_substitutions = {
+      "ip": "IPv4 адрес",
+      "ip6": "IPv6 адрес",
+      "gateway": "Шлюз",
+      "gw": "Шлюз",
+      "default gateway": "Шлюз по умолчанию",
+      "default gw": "Шлюз по умолчанию",
+      "ip_mask": "IPv4 адрес/маска",
+      "ip6_mask": "IPv6 адрес/маска",
+      "network": "Подсеть",
+      "interfaces": "Интерфейсы",
+      "syslog": "Syslog сервер",
+      "aaa": "Сервер аутентификации",
+      "ntp1": "Основной NTP сервер",
+      "ntp2": "Резервный NTP сервер",
+      "dns1": "Основной DNS сервер",
+      "dns2": "Резервный DNS сервер"
+    };
+```
+
+Each process of input validation is a separate function. Once you've defined new function, you should add it in `format_functions` variable, which contains format's name and the name of associated with it function. If you want to use your function automatically with specific label, you should add it in `static_formats` variable.
+
 ## Logic
 
 The conversion of yaml-data to web form is implemented the next way: yaml-data → json → web form. If you want to change visibility of the main form, edit `home.html` file. To get more information about the editor, which is used to convert json to web form, see [https://github.com/json-editor/json-editor](https://github.com/json-editor/json-editor).
@@ -457,7 +485,6 @@ The conversion of yaml-data to web form is implemented the next way: yaml-data �
 Also this json-editor is used to generate "commands" page. Once you've provided set of commands (in yaml format) for each device that you want the customer to execute in CLI, it is transformed in web-form with text-areas as it's defined in `modules/commands_to_schema.py` file.
 
 Validation process is defined in `home.html` file (with JavaScript code).
-
 
 ### Unique substitutions and validation
 
@@ -468,4 +495,3 @@ One-to-one relationship between specific label's name and the substitution for i
 3. Rewrite this specific label in yaml-data with the randomized one (from 2nd step).
 4. Associate the unique label's name from 2nd step with the original one
 5. Associate substitution and format from the comment with the obtained from 2nd step label's name.
-
