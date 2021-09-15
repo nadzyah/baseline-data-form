@@ -8,7 +8,7 @@ def yaml_comments(yamldata):
     Establish a correspondence between
         1) label and its name (one-to-one relationship)
         2) label and format (one-to-one relationship)
-    
+
     The information about name and format must be specified as comment
     the next way (without first space):
         #[name][format]
@@ -16,13 +16,13 @@ def yaml_comments(yamldata):
         #[][format]
     or in case you a label doesn't have explicit format
         #[name]
-    
+
     If you want to use multi-line comment, end each line with ## symbol,
     excluding the last one:
         label: value  #[Lorem ipsum dolor ##
                  #sit amet consectetur##
                  # adipiscing][format]
-    
+
     Do NOT break format field as it is shown in the next examples:
         #[comment]##
         #[format]
@@ -43,9 +43,9 @@ def yaml_comments(yamldata):
 
     Example
     -------
-    yamldata = 
+    yamldata =
         UTM:  #[Local FortiGate][]
-          interfaces:  #[Интерфейсы #
+          interfaces:  #[Интерфейсы ##
                        # other text][]
             - ip_mask: 172.16.25.10/24  #[IP адрес/Маска][ipmask]
               gw: 172.16.25.1  #[Шлюз][ip]
@@ -55,14 +55,20 @@ def yaml_comments(yamldata):
     result =
         [
             '{
-                 "UTM": "Local FortiGate",
-                 "interfaces": "Интерфейсы # other text",
-                 "ip_mask": "IP адрес/Маска",
-                 "gw": "Шлюз"
+                 "UTM592": "Local FortiGate",
+                 "interfaces6811": "Интерфейсы ## other text",
+                 "ip_mask3014": "IP адрес/Маска",
+                 "gw3442": "Шлюз"
              }',
             '{
-                 "ip_mask": "ipmask",
-                 "gw": "ip"
+                 "ip_mask3014": "ipmask",
+                 "gw3442": "ip"
+             }'
+            '{
+                 'UTM592': 'UTM',
+                 'interfaces6811': 'interfaces',
+                 'ip_mask3014': 'ip_mask',
+                 'gw3442': 'gw'
              }'
         ]
     """
@@ -138,22 +144,42 @@ def set_comments_back(yamlstr, names_formats_orig):
 
     Example
     -------
-    yamlstr = 
-        UTM1:
-          mgmt_iface:
-            ip_mask: 172.16.25.10/24
-            gw: 172.16.25.1
+    yamlstr =
+        UTM592:  #[Local FortiGate][]
+          interfaces6811:  #[Интерфейсы ##
+                       # other text][]
+            - ip_mask3014: 172.16.25.10/24  #[IP адрес/Маска][ipmask]
+              gw3442: 172.16.25.1  #[Шлюз][ip]
+            - ip_mask: 0.0.0.0/0
+              gw: 0.0.0.0
 
-    comments_formats = 
-        [{"UTM": "Local #FortiGate","mgmt_iface": "MGMT Интерфейс","gw": "Шлюз"},
-         {"ip_mask": "ipmask","gw": "ip"}]
+    names_formats_orig = [
+             {
+                 "UTM592": "Local FortiGate",
+                 "interfaces6811": "Интерфейсы ## other text",
+                 "ip_mask3014": "IP адрес/Маска",
+                 "gw3442": "Шлюз"
+             },
+             {
+                 "ip_mask3014": "ipmask",
+                 "gw3442": "ip"
+             }
+             {
+                 'UTM592': 'UTM',
+                 'interfaces6811': 'interfaces',
+                 'ip_mask3014': 'ip_mask',
+                 'gw3442': 'gw'
+             }
+        ]
 
-    result = 
-        UTM1:  #[Local ##
-               #FortiGate][]
-          mgmt_iface:   #[MGMT Интерфейс][]
-            ip_mask: 172.16.25.10/24  #[][ipmask]
-            gw: 172.16.25.1  #[Шлюз][ip]
+    result =
+        UTM:  #[Local FortiGate][]
+          interfaces:  #[Интерфейсы ##
+                       # other text][]
+            - ip_mask: 172.16.25.10/24  #[IP адрес/Маска][ipmask]
+              gw: 172.16.25.1  #[Шлюз][ip]
+            - ip_mask: 0.0.0.0/0
+              gw: 0.0.0.0
     """
     result = yamlstr
     names, formats, unique_orig = (names_formats_orig[0], names_formats_orig[1], names_formats_orig[2])
@@ -184,39 +210,46 @@ def set_comments_back(yamlstr, names_formats_orig):
 
     # Add comment to yaml-data string
     for label, comment in merged.items():
-        first_time = True
         for line in yamlstr.splitlines():
             # find the index of label in the line
             label_startind = line.find(label+":")
             # if label exists in this line
-            if label_startind != -1 and first_time:
-                first_time = False
+            if label_startind != -1:
+                # replace "label+randomint" with its original name
                 newline = line.replace(label, unique_orig[label])
                 result = result.replace(line, newline + "    " + comment)
-                break
     return result
 
 
 if __name__ == "__main__":
-    testnocomms = """trusthost:
-  - ip: 10.0.0.0/8    #[one][ipmask]
-  - ip: 172.16.0.0/12    #[one dot one][]
-something else:
-  ip: another one
-
-ip: 1.1.1.1   #[][ipaddr]
+    testnocomms = """UTM:  #[Local FortiGate][]
+          interfaces:  #[Интерфейсы ##
+                       # other text][]
+            - ip_mask: 172.16.25.10/24  #[IP адрес/Маска][ipmask]
+              gw: 172.16.25.1  #[Шлюз][ip]
+            - ip_mask: 0.0.0.0/0
+              gw: 0.0.0.0
 """
+
     result_after_yamlcomms = yaml_comments(testnocomms)
-    for x in result_after_yamlcomms:
-        print(x)
-    
-    result_after_setcomms = set_comments_back(yaml.dump(yaml.safe_load(result_after_yamlcomms[3]), 
+    #print(result_after_yamlcomms)
+
+    """
+    result_after_setcomms = set_comments_back(yaml.dump(yaml.safe_load(result_after_yamlcomms[3]),
                                                         sort_keys=False),
                                 [json.loads(result_after_yamlcomms[0]),
                                  json.loads(result_after_yamlcomms[1]),
                                  result_after_yamlcomms[2]])
+    """
+    result_after_setcomms = set_comments_back("""UTM592:
+  interfaces6811:
+    - ip_mask3014: 172.16.25.10/24
+      gw3442: 172.16.25.1
+    - ip_mask: 0.0.0.0/0
+      gw: 0.0.0.0
+    - ip_mask3014: 0.0.0.0/0
+      gw: 0.0.0.1
+    """, [{"UTM592": "Local FortiGate", "interfaces6811": "Интерфейсы ## other ##text",  "ip_mask3014": "IP адрес/Маска", "gw3442": "Шлюз"},
+      {"ip_mask3014": "ipmask","gw3442": "ip"},
+      {'UTM592': 'UTM','interfaces6811': 'interfaces','ip_mask3014': 'ip_mask','gw3442': 'gw'}])
     print(result_after_setcomms)
-
-
-
-

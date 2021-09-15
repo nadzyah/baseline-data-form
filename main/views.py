@@ -25,10 +25,10 @@ def register(request):
         form = OrganizationForm(request.POST)
         if form.is_valid():
             post = form.save()
-            # Check if commands field is specified 
+            # Check if commands field is specified
             if post.commands != '':
                 # Convert comments field (string in yaml-format) to
-                # json-editor friendly string 
+                # json-editor friendly string
                 post.commands = convert_dict_array(yaml.safe_load(post.commands))
             post.save()
             # Redirect to the main form page
@@ -38,7 +38,7 @@ def register(request):
 def send_email(uuid, orgname, addresses):
     """
     Send email to specified addresses
-    
+
     uuid: string with organization ID
     addresses: list of email addresses
     """
@@ -50,8 +50,7 @@ updated at {date_time_now}."
         body,
         "webform@solidex.by",
         addresses,
-        fail_silently=False
-    )
+        fail_silently=False)
 
 def home(request, orgid):
     """
