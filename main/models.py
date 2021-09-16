@@ -3,6 +3,10 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 import uuid
 
+import datetime
+import dateparser
+from babel.dates import format_date, format_datetime, format_time
+
 class OrganizationModel(models.Model):
     """
     A class used to represent an Organization
@@ -52,8 +56,14 @@ class OrganizationModel(models.Model):
         date = (self.created_at.day, self.created_at.month, self.created_at.year)
         return self.company + "-" + "%02d-%02d-%d" % date
 
+    def created_at_ru(self):
+        date_time_en = dateparser.parse(str(self.created_at))
+        date_time_ru = format_datetime(date_time_en, locale='ru_RU')
+        return date_time_ru[:-3]
+
     class Meta:
         verbose_name = "Organization"
+
 
 def get_upload_path(instance, filename):
     """Generate path where the config files will be stored"""
