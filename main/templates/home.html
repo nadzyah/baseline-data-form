@@ -93,9 +93,16 @@ current)</span></a>
     <div class='column col-md-12 mb-2'>
       <h4>Заполните поля формы в соответствии с их названиями</h4>
     </div>
-    <div class='column col-md-12 mb-4'>
+    <div class='column col-md-12 mb-2'>
       <p>По завершению заполнения формы сохраните её с использованием кнопки "Отправить" (форма подлежит повторному редактированию). Кнопка "Сбросить изменения" возвращает значения полей формы к варианту последней сохранённой версии (при первом редактировании — к первоначальной).</p>
     </div>
+    <div class="column col-md-12">
+      <p>
+        <b>Контакты:</b> {{ org_object.email_addresses }} <br>
+        <b>Дата создания формы:</b> {{ org_object.created_at }}
+      </p>
+    </div>
+    <hr size="1" width="96%" color="black" style="margin-left:1rem">
     <div class='column col-md-12 mb-4' id='editor_holder'></div>
     <div class='column col-md-12 mb-4'>
       <span id='valid_indicator' class='badge badge-success'></span>

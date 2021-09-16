@@ -36,9 +36,9 @@ class OrganizationModel(models.Model):
     yamldata = models.TextField(help_text='Data from .yml file')
     num_conf = models.IntegerField(help_text='Number of requested config files',
                        validators=[MinValueValidator(0, message="Minimal number of files\
-                                                        that may be requested is 0"), 
+                                                        that may be requested is 0"),
                                    MaxValueValidator(10, message="Maximal number of files\
-                                                        that may be requested is 10")], 
+                                                        that may be requested is 10")],
                        default=0)
     comment_conf = models.CharField(help_text='Comment for configs',
                                     max_length=500,
@@ -62,7 +62,7 @@ def get_upload_path(instance, filename):
 class DocumentModel(models.Model):
     """
     A class used to represent a Configuration File
-   
+
     Attributes
     ----------
     id: UUIDField
@@ -87,7 +87,7 @@ class DocumentModel(models.Model):
     @property
     def org_id(self):
         return self.organization.id
-    
+
     def __str__(self):
         return str(self.organization) + "_" + self.document.name[37:]
 
