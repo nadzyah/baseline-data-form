@@ -98,7 +98,11 @@ current)</span></a>
     </div>
     <div class="column col-md-12">
       <p>
-        <b>Контакты:</b> {{ org_object.email_addresses }} <br>
+        <b>Контакты:</b>
+        {% for mail in emails %}
+          <a href="mailto:{{ mail }}">{{ mail }}</a>
+        {% endfor %}
+        <br>
         <b>Дата создания формы:</b> {{ org_object.created_at_ru }}
       </p>
     </div>

@@ -70,7 +70,8 @@ def home(request, orgid):
     yform = yaml.safe_load(unique_yamldata)  # Convert yaml-data to python object
     # Convert python object to string in json format
     json_from_yaml = json.dumps(yform, sort_keys=False)
-
+    # List of contacts
+    addresses = org_object.email_addresses.split(", ")
     if request.method == "POST":
         after_edit = request.POST.get("after_edit")
         substitutions = request.POST.get("substitutions")
@@ -81,10 +82,10 @@ def home(request, orgid):
                                                                    json.loads(formats),
                                                                    json.loads(unique_orig)])
         org_object.save()
-        addresses = org_object.email_addresses.split(", ")
         send_email(orgid, org_object.company, addresses)
     return render(request, 'home.html', {'org_object': org_object,
                                          'orgid': orgid,
+                                         'emails': addresses,
                                          'json_from_yaml': json_from_yaml,
                                          'substitutions': substitutions,
                                          'formats': formats,
