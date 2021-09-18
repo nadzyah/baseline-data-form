@@ -57,9 +57,9 @@ class OrganizationModel(models.Model):
         return self.company + "-" + "%02d-%02d-%d" % date
 
     def created_at_ru(self):
-        date_time_en = dateparser.parse(str(self.created_at))
-        date_time_ru = format_datetime(date_time_en, locale='ru_RU')
-        return date_time_ru[:-3]
+        date_en = dateparser.parse(str(self.created_at))
+        date_ru = format_date(date_en, locale='ru_RU')
+        return date_ru
 
     class Meta:
         verbose_name = "Organization"
