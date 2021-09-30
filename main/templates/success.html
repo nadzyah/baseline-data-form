@@ -26,12 +26,8 @@
 {% block content %}
   <div class="jumbotron text-center">
     <h1 class="display-5 text-dark mb-3">Ваши данные отправлены. Спасибо!</h1>
-    <!--a class="btn btn-secondary mt-4" href="{% url 'main:home' orgid %}" role="button">
-       Редактировать данные
-    </a-->
-    <p class="lead">Для редактирования внесённых данных воспользуйтесь навигационной панелью.</p>
+    <p class="lead mb-3">Для улучшения качества портала, пожалуйста, заполните <a class="stretched-link" href="{% url 'main:feedback' orgid %}" role="button">форму обратной связи</a></p>
     <hr>
-    <p>Для улучшения качества портала, пожалуйста, заполните <a class="stretched-link" href="{% url 'main:feedback' orgid %}" role="button">форму обратной связи</a></p>
-    <p>При возникновении вопросов обращайтесь по адресу <a class="stretched-link" href="mailto:info@solidex.by" role="button">info@solidex.by</a></p>
+    <a class="btn btn-secondary" href="{% url 'main:home' orgid %}" role="button">Редактировать данные</a>
   </div>
 {% endblock %}
