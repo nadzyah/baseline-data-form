@@ -1,7 +1,7 @@
 
 # Baseline Data Form
 
-Baseline Data Form is a django application that allows you to collect baseline data from your customers.
+Baseline Data Form is a Django application that allows you to collect baseline data from your customers.
 
 ### Online Demo
 
@@ -50,7 +50,7 @@ DATABASES = {
 
 Once you’ve configured one of the databases, create `media/` folder in the project root directory to store config files that customers will upload: `mkdir media`
 
-Also don't forget to set `Debug = True` in `settings.py` file in case you're not ready to use it in production.
+Also, don't forget to set `Debug = True` in the `settings.py` file in case you're not ready to use it in production.
 
 Then make migrations and run the server:
 
@@ -67,11 +67,11 @@ Now you can connect to your server via HTTP: `http://<server's_IP>:<port>/`
 
 ## Add new organization
 
-Go to the `http://<server's_IP>:<port>/register/` and create a new web form for your customer's organization. Each organization is stored with its UUID. This UUID is used in all URLs that are associated with the organization. That's why a customer won't be able to access web-pages of another one (as long as they don't know the exact UUID of another organization).
+Go to the `http://<server's_IP>:<port>/register/` and create a new webform for your customer's organization. Each organization is stored with its UUID. This UUID is used in all URLs that are associated with the organization. That's why a customer won't be able to access the web-pages of another one (as long as they don't know the exact UUID of another organization).
 
 To register an organization you need:
 
-- Information (in yaml format) about baseline data that you want to collect from your customer. Here's an example (pay attention on comments, we'll talk about them later):
+- The information (in YAML format) about baseline data that you want to collect from your customer. Here's an example (pay attention to the comments, we'll talk about them later):
 
 ```yaml
 Device1:   #[Central router]
@@ -90,9 +90,9 @@ global:
    dns1: 0.0.0.0
 ```
 
-- Number of configuration files that you want to get from your customer (default is 0). We strongly recommend to provide the customer with a comment, which describes what configuration files you want to get.
+- The number of configuration files that you want to get from your customer (default is 0). We strongly recommend providing the customer with a comment, which describes what configuration files you want to get.
 - Email addresses of people who want to receive messages every time a customer updates the form.
-- (optional) Set of commands for each device that you want the customer to execute in CLI of devices and provide you with the output. Use yaml syntax the next way:
+- (optional) A set of commands for each device that you want the customer to execute in CLI of devices and provide you with the output. Use YAML syntax the next way:
 
 ```yaml
 Device1:
@@ -103,7 +103,7 @@ Device2:
   - command3
 ```
 
-**Do NOT leave unknown fields in yaml-data with empty value (or null value)** like in the example bellow, cause the parser won't be able to detect the type of the field correctly (actually it would be defined as null and a customer won't be able to put information here):
+**Do NOT leave unknown fields in YAML-data with an empty value (or null value)** like in the example below, cause the parser won't be able to detect the type of the field correctly (actually it would be defined as null and a customer won't be able to put information here):
 
 ```yaml
 !!!INCORRECT
@@ -112,7 +112,7 @@ global:
   ntp: null 
 ```
 
-Instead use empty strings or string as a template:
+Instead, use empty strings or strings as a template:
 
 ```yaml
 global:
@@ -120,16 +120,16 @@ global:
   ntp: 0.0.0.0
 ```
 
-Note: If you want to use a number as label's name, put it in single or double quotes (the editor doesn't support number as a key).
+Note: If you want to use a number as the label's name, put it in single or double quotes (the editor doesn't support number as a key).
 
 Once you've filled the registration form, click "Отправить" button and then you'll be redirected to the web page at `http://<server's_IP>:<port>/<uuid>/`. Your customer can use this link it to edit the form.
 
 ## Work with the main form
 
-The information about baseline data that you've provided while registering an organization is transformed into a web-form. To get more information about the transformation process see [Development → Logic](#logic) section.
+The information about baseline data that you've provided while registering an organization is transformed into a webform. To get more information about the transformation process see [Development → Logic](#logic) section.
 
 ### Change visibility of labels' names
-Visibility of some labels in your yaml-data may be changed when they are displayed on the web-page. For example, the next yaml-data:
+The visibility of some labels in your YAML-data may be changed when they are displayed on the web-page. For example, the next YAML-data:
 
 ```yaml
 Device1:
@@ -146,7 +146,7 @@ will be displayed this way:
 
 ![static/images/subst_example.png](static/images/subst_example.png)
 
-So if you want to change label's visibility, provide its name in a comment using square brackets. 
+So if you want to change the label's visibility, provide its name in a comment using square brackets. 
 
 **Do NOT use spaces** to separate `#` and `[` symbols.
 
@@ -222,7 +222,7 @@ In addition, we apply the next substitutions (case sensitive) for the label's na
 
 ### Validation of the input
 
-For some inputs we check if a customer provides the data correctly. If the data isn't correct, the input's border and the badge at the end of the form turn red. Nevertheless, a customer will be able to send invalid data.
+For some inputs, we check if a customer provides the data correctly. If the data isn't correct, the input's border and the badge at the end of the form turn red. Nevertheless, a customer will be able to send invalid data.
 
 So inputs with the next formats are checked:
 
@@ -311,7 +311,7 @@ So inputs with the next formats are checked:
   </tbody>
 </table>
 
-You should specify the format of the field in yaml comment. Do it the next way:
+You should specify the format of the field in the YAML comment. Do it the next way:
 ```yaml
 label: value   #[substitution][format]
 ```
@@ -329,7 +329,7 @@ the errors for the fields with specified formats will be displayed the next way:
 
 ![static/images/formats.png](static/images/formats.png)
 
-**Do NOT use spaces to separate substitution and format** field like it's shown in the example bellow:
+**Do NOT use spaces to separate substitution and format** field like it's shown in the example below:
 ```yaml
 !!!INCORRECT
 label: value   #[substitution] [format]
@@ -380,20 +380,20 @@ Some labels have predefined formats, which are overwritten with your comment for
   </tbody>
 </table>
 
-If you don't want to validate user's input for specific labels, keep the brackets empty:
+If you don't want to validate the user's input for specific labels, keep the brackets empty:
 ```yaml
 ip: 1.1.X.1   #[Special IP address][]
 ```
 
 ### Multi-line comments
 
-If you want to write your label name in multiple lines, use `##` symbol as line break. See the example bellow:
+If you want to write your label name in multiple lines, use the `##` symbol as a line break. See the example below:
 ```yaml
  label: value  #[This is a very ##
                #long, really long##
                # substitution][format]
 ```
-Line breaks will be displayed with label's name.
+Line breaks will be displayed with the label's name.
 
 **Do NOT break format field,** even the way that is shown in the next examples:
 ```yaml
@@ -406,17 +406,17 @@ label2: value2   #[substitution][for##
 ```
 ## Upload and delete files
 
-As it was mentioned above, all the files are stored in `/media` folder. Files from each organization are stored in isolated sub-folder with organization's uuid as the sub-folder's name.
+As was mentioned above, all the files are stored in the `/media` folder. Files from each organization are stored in an isolated subfolder with the organization's UUID as the subfolder's name.
 
-When user deletes a file, the file is also deleted from the server. But in case you delete an organization from the database, all the files that are associated with it are deleted only from the database and continue to be stored on the server, thus you should remove them manually.
+When a user deletes a file, the file is also deleted from the server. But in case you delete an organization from the database, all the files that are associated with it are deleted only from the database and continue to be stored on the server, thus you should remove them manually.
 
 ## Access the filled data
 
-To get the last saved version of the yaml-data in plain text use `http://<server's_IP>:<port>/<uuid>/yamldata.yml`
+To get the last saved version of the YAML-data in plain text use `http://<server's_IP>:<port>/<uuid>/yamldata.yml`
 
-To get files that the customer uploads see `media/<uuid>/` folder.
+To get files that the customer uploads see the `media/<uuid>/` folder.
 
-The commands output is stored in json format, here's an example:
+The commands output is stored in JSON format, here's an example:
 
 ```json
 {
@@ -433,7 +433,7 @@ The commands output is stored in json format, here's an example:
 
 ## Feedback
 
-A customer can provide you with a feedback which is editable.
+A customer can provide you with editable feedback.
 
 # Development
 
@@ -441,19 +441,19 @@ A customer can provide you with a feedback which is editable.
 
 **Models and forms**
 
-The main component of the project is OrganizationModel, which is defined in `models.py` (all main files are stored in `main/` folder). It is used to create and store information about organizations in database.
+The main component of the project is OrganizationModel, which is defined in `models.py` (all main files are stored in the `main/` folder). It is used to create and store information about organizations in a database.
 
-The DocumentModel is associated with OrganizationModel and is used to store information about the files that the customer uploads. See `models.py` file to get more information.
+The DocumentModel is associated with OrganizationModel and is used to store information about the files that the customer uploads. See the `models.py` file to get more information.
 
-The OrganizationForm and DocumentForm correspond to the models and are used to create web-form from the models' fields. See `forms.py` file to get more information.
+The OrganizationForm and DocumentForm correspond to the models and are used to create webform from the models' fields. See the `forms.py` file to get more information.
 
 **URLs and web output**
 
-All the URLs are defined in `urls.py` file. Each URL corresponds to the web output—the view. A view defines logic of the responses according to HTTP-requests. See `views.py` file to get more information. Also keep in mind that all the HTML files are stored in `main/tempales/` directory.
+All the URLs are defined in the `urls.py` file. Each URL corresponds to the web output—the view. A view defines the logic of the responses according to HTTP requests. See the `views.py` file to get more information. Also, keep in mind that all the HTML files are stored in the `main/templates/` directory.
 
 ## Edit substitutions and input validation
 
-If you want to define more values for default substitutions, you should edit `home.html` file. They are defined in `static_substituions` variable:
+If you want to define more values for default substitutions, you should edit the `home.html` file. They are defined in `static_substituions` variable:
 
 ```javascript
 static_substitutions = {
@@ -476,22 +476,22 @@ static_substitutions = {
     };
 ```
 
-Each process of input validation is a separate function. Once you've defined new function, you should add it in `format_functions` variable, which contains format's name and the name of associated with it function. If you want to use your function automatically with specific label, you should add it in `static_formats` variable.
+Each process of input validation is a separate function. Once you've defined a new function, you should add it in the `format_functions` variable, which contains the format's name and the name associated with its function. If you want to use your function automatically with a specific label, you should add it in the `static_formats` variable.
 
 ## Logic
 
-The conversion of yaml-data to web form is implemented the next way: yaml-data → json → web form. If you want to change visibility of the main form, edit `home.html` file. To get more information about the editor, which is used to convert json to web form, see [https://github.com/json-editor/json-editor](https://github.com/json-editor/json-editor).
+The conversion of YAML-data to webform is implemented the next way: YAML-data → JSON → webform. If you want to change the visibility of the main form, edit the `home.html` file. To get more information about the editor, which is used to convert JSON to webform, see [https://github.com/json-editor/json-editor](https://github.com/json-editor/json-editor).
 
-Also this json-editor is used to generate "commands" page. Once you've provided set of commands (in yaml format) for each device that you want the customer to execute in CLI, it is transformed in web-form with text-areas as it's defined in `modules/commands_to_schema.py` file.
+Also, this JSON-editor is used to generate the "commands" page. Once you've provided a set of commands (in YAML format) for each device that you want the customer to execute in CLI, it is transformed in webform with text-areas as it's defined in the `modules/commands_to_schema.py` file.
 
-Validation process is defined in `home.html` file (with JavaScript code).
+The validation process is defined in the `home.html` file (with JavaScript code).
 
 ### Unique substitutions and validation
 
-One-to-one relationship between specific label's name and the substitution for it (label and format for its input) is established with the next steps:
+A one-to-one relationship between the specific label's name and the substitution for it (label and format for its input) is established with the next steps:
 
 1. Get the original label's name.
 2. Write to the end of the name a random integer.
-3. Rewrite this specific label in yaml-data with the randomized one (from 2nd step).
-4. Associate the unique label's name from 2nd step with the original one
-5. Associate substitution and format from the comment with the obtained from 2nd step label's name.
+3. Rewrite this specific label in YAML-data with the randomized one (from 2nd step).
+4. Associate the unique label's name from the 2nd step with the original one
+5. Associate substitution and format from the comment with the obtained from the 2nd step label's name.
