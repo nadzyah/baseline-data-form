@@ -5,7 +5,7 @@ Baseline Data Form is a Django application that allows you to collect baseline d
 
 ### Online Demo
 
-Check out our demo: [https://data.solidex.by/580fb73e-e6be-4e66-a3d6-9fa22bcb26c3/](https://data.solidex.by/580fb73e-e6be-4e66-a3d6-9fa22bcb26c3/)
+Check out our demo: [https://data.solidex.by/a349beb9-b9ed-430f-9e2d-5c2c29c0432d/](https://data.solidex.by/a349beb9-b9ed-430f-9e2d-5c2c29c0432d/)
 
 ---
 
