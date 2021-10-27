@@ -16,7 +16,7 @@ class OrganizationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['company'].widget.attrs['placeholder'] = "Solidex"
-        self.fields['yamldata'].widget.attrs['placeholder'] = """Insert data from your .yml file with valid syntax. See the example bellow:
+        self.fields['yamldata'].widget.attrs['placeholder'] = """Insert the data from your .yml file with valid syntax:
 FG-100F:
   interfaces:
   - ip_mask: 0.0.0.0/0
@@ -32,7 +32,7 @@ global:
         """
         self.fields['email_addresses'].widget.attrs['placeholder'] = "worker1@solidex.by, worker2@solidex.by"
         self.fields['comment_conf'].widget.attrs['placeholder'] = 'Example: Загрузите конфигурационные файлы всех устройств FortiGate'
-        self.fields['commands'].widget.attrs['placeholder'] = """Provide required log commands for each device in yaml syntax. See the example bellow:
+        self.fields['commands'].widget.attrs['placeholder'] = """Provide required commands for each device in yaml syntax:
 FG-100F:
   - show system interface
 FM:
