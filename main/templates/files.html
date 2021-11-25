@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %} {{ org_object.company }} {% endblock %}
+
+{% block orgname %}
+  <a class="navbar-brand" href="{% url 'main:home' orgid %}">
+  {{ org_object.company }}
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <div class="navbar-nav">
+      <a class="nav-item nav-link" href="{% url 'main:home' orgid %}">Home</a>
+      <a class="nav-item nav-link active" href="{% url 'main:files' orgid %}">Files<span class="sr-only">(current)</span></a>
+      {% if org_object.commands != '' %}
+        <a class="nav-item nav-link" href="{% url 'main:commands' orgid %}">Commands</a>
+      {% endif %}
+      <a class="nav-item nav-link" href="{% url 'main:feedback' orgid %}">Feedback</a>
+    </div>
+  </div>  
+{% endblock %}
+
+
+{% block content %}
+  <h4 class="mb-4">{{ comment }}</h4>
+  {% if docs %}
+    <table class="table table-hover">
+      <thead class="thead-light">
+        <tr>
+	  <th>Имя файла</th>
+	  <th>Описание</th>
+	  <th>Скачать</th>
+	  <th>Удалить</th>
+	</tr>
+      </thead>
+      <tbody>
+	{% for doc in docs %}
+	  <tr>
+	    <td>
+	      {{ doc.document.name | slice:"37:" }}
+	    </td>
+	    <td>
+	      {{ doc.description  }}
+	    </td>
+	    <td>
+	      <a href="{{ doc.document.url }}" class="btn btn-secondary" role="button">
+	  	Скачать
+	      </a>
+	    </td>
+	    <td>
+	    	<form method="POST" action="{% url 'main:delete_file' orgid doc.id %}">
+	    	  {% csrf_token %}
+	    	  <button type="submit" class="btn btn-danger">Удалить</button>
+	    	</form>
+	    </td>
+	  </tr>
+       {% endfor %}
+     </tbody>
+   </table>
+   {% endif %}
+
+   {% if current_uploaded_files < max_files %}
+     <form method="post" enctype="multipart/form-data">
+       {% csrf_token %}
+       <div class="form-group row ml-0">
+     	 <div class="col-4 mr-2">
+           <div class="form-text">Описание</div>
+           <div class="input-sm"> {{ form.description }}</div>
+         </div>
+         <div class="col-xs-2">
+           <div class="form-text">Файл</div>
+	       <div type="file" class="mt-1"> {{ form.document }}</div>
+	       <!--div class="custom-file">
+	       <div type="file" class="custom-file-input mt-1" id="customFile"> {{ form.document }}</div>
+            <label class="custom-file-label" for="customFile">Choose file</label>
+           </div-->
+	     </div>
+       </div>
+       <button type="submit" name="upload_doc" class="btn btn-success mt-0 ml-3 mb-4">
+           Загрузить
+       </button>
+     </form>
+    {% else %}
+    	<p>Количество загруженных файлов достигнуто требуемого значения. Для загрузки новой версии существующего файла удалите исходный файл, затем загрузите его изменённую версию.
+    {% endif %}
+{% endblock %}

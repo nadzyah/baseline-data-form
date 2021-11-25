@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %} {{ org_object.company }} {% endblock %}
+
+{% block orgname %}
+  <a class="navbar-brand" href="{% url 'main:home' orgid %}">
+  {{ org_object.company }}
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <div class="navbar-nav">
+      <a class="nav-item nav-link" href="{% url 'main:home' orgid %}">Home</a>
+      {% if org_object.num_conf != 0 %}
+        <a class="nav-item nav-link" href="{% url 'main:files' orgid %}">Files</a>
+      {% endif %}
+      {% if org_object.commands != '' %}
+        <a class="nav-item nav-link" href="{% url 'main:commands' orgid %}">Commands</a>
+      {% endif %}
+      <a class="nav-item nav-link active" href="{% url 'main:feedback' orgid %}">Feedback<span class="sr-only">(current)</span></a>
+    </div>
+  </div>
+{% endblock %}
+
+{% block content %}
+  <h4 class="text-dark mb-4">Для улучшения качества портала, пожалуйста, ответьте на следующие вопросы</h4>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <h6 class="form-text mb-2">Был ли портал удобен в использовании при предоставлении исходных данных?</h6>
+    <div class="col-my-4 mb-4"> {{ form.is_user_friendly }}</div>
+    <h6 class="form-text mb-2">Что бы Вы посоветовали улучшить в функционале портала?</h6>
+    <div class="form-textarea mb-4"> {{ form.how_to_make_it_better }}</div>
+    <button type="submit" name="create_form" class="btn btn-success mt-2 mb-4">
+      Отправить
+    </button>
+  </form>
+{% endblock %}
+
