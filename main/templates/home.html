@@ -215,7 +215,8 @@ current)</span></a>
         "ntp1": "Основной NTP сервер",
         "ntp2": "Резервный NTP сервер",
         "dns1": "Основной DNS сервер",
-        "dns2": "Резервный DNS сервер"
+        "dns2": "Резервный DNS сервер",
+        "port": "Порт"
       };
 
       // Your custom substituions overwrite our static
@@ -305,15 +306,20 @@ current)</span></a>
         return binaryIP(addr_mask[0]).slice(-diffmask) == '0'.repeat(diffmask);
       }
 
+      function validPort(testval) {
+        return testval > 0 && testval < 65535;
+      }
+
       // Formats and functions that are associated with them
       format_functions = {
-                          "ipaddr": validIP,
-                          "ip6addr": validIP6,
-                          "vlanid": validVLAN_ID,
-                          "ipmask": validIPMask,
-                          "ip6mask": validIP6Mask,
-                          "network": validNetwork
-                         };
+        "ipaddr": validIP,
+        "ip6addr": validIP6,
+        "vlanid": validVLAN_ID,
+        "ipmask": validIPMask,
+        "ip6mask": validIP6Mask,
+        "network": validNetwork,
+        "port": validPort
+      };
       // Predefined labels
       var static_formats = {
         "ip": "ipaddr",
@@ -325,7 +331,8 @@ current)</span></a>
         "ip_mask": "ipmask",
         "ip6_mask": "ip6mask",
         "network": "network",
-        "vlanid": "vlanid"
+        "vlanid": "vlanid",
+        "port": "port"
       }
 
       label_format = {{ formats|safe }};

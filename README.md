@@ -216,6 +216,10 @@ In addition, we apply the next substitutions (case sensitive) for the label's na
      <td>dns2</td>
      <td>Резервный DNS-сервер</td>
   </tr>
+  <tr>
+     <td>port</td>
+     <td>Порт</td>
+  </tr>
   </tbody>
 </table>
 
@@ -308,6 +312,18 @@ So inputs with the next formats are checked:
 	    192.16.12.0/21 — not a valid network with mask 21<br>
     </td>
   </tr>
+
+  <tr valign="top">
+    <td>port</td>
+    <td>
+	     443<br>
+	     32873
+    </td>
+    <td>
+	    -323 — The port must be a positive number<br> 
+	    65535 — The port must be less than 65535<br>
+    </td>
+  </tr>
   </tbody>
 </table>
 
@@ -377,6 +393,10 @@ Some labels have predefined formats, which are overwritten with your comment for
        <td>vlanid</td>
        <td>vlanid</td>
     </tr>
+    <tr>
+       <td>port</td>
+       <td>port</td>
+    </tr>
   </tbody>
 </table>
 
@@ -400,7 +420,7 @@ Line breaks will be displayed with the label's name.
 !!!INCORRECT
 label1: value1   #[substitution]##
                  #[format]
-!!!INCORRECT	             
+!!!INCORRECT
 label2: value2   #[substitution][for##
                  #mat]
 ```
@@ -459,6 +479,7 @@ If you want to define more values for default substitutions, you should edit the
 static_substitutions = {
       "ip": "IPv4 адрес",
       "ip6": "IPv6 адрес",
+      "port": "Порт"
       "gateway": "Шлюз",
       "gw": "Шлюз",
       "default gateway": "Шлюз по умолчанию",
